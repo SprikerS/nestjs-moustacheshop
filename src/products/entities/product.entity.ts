@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Sale } from 'src/sales/entities/sale.entity'
 
 @Entity()
 export class Product {
@@ -13,4 +14,7 @@ export class Product {
 
   @Column('int')
   stock: number
+
+  @OneToMany(() => Sale, sale => sale.product, { cascade: true })
+  sales?: Sale[]
 }

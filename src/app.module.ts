@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { CommonModule } from './common/common.module'
 import { ProductsModule } from './products/products.module'
+import { SalesModule } from './sales/sales.module'
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { ProductsModule } from './products/products.module'
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ProductsModule,
     CommonModule,
+    ProductsModule,
+    SalesModule,
   ],
 })
 export class AppModule {}

@@ -50,7 +50,7 @@ export class ProductsService {
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.preload({
-      id: id,
+      id,
       ...updateProductDto,
     })
 
