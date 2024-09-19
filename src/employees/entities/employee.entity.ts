@@ -16,10 +16,10 @@ export class Employee {
   @Column('text')
   names: string
 
-  @Column('text')
+  @Column('text', { name: 'paternal_surname' })
   paternalSurname: string
 
-  @Column('text')
+  @Column('text', { name: 'maternal_surname' })
   maternalSurname: string
 
   @Column('text', { unique: true })
@@ -31,10 +31,10 @@ export class Employee {
   @Column('text', { unique: true })
   dni: string
 
-  @Column('int', { unique: true })
+  @Column('int', { unique: true, name: 'phone_number' })
   phoneNumber: number
 
-  @Column('bool', { default: true })
+  @Column('bool', { default: true, name: 'is_active' })
   isActive: boolean
 
   @BeforeInsert()

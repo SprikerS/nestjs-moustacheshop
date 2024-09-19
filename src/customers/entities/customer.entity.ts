@@ -16,10 +16,10 @@ export class Customer {
   @Column('text')
   names: string
 
-  @Column('text')
+  @Column('text', { name: 'paternal_surname' })
   paternalSurname: string
 
-  @Column('text')
+  @Column('text', { name: 'maternal_surname' })
   maternalSurname: string
 
   @Column('text', { unique: true })

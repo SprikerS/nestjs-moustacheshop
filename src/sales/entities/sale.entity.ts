@@ -16,7 +16,7 @@ export class Sale {
   @Column('int')
   quantity: number
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 5, scale: 2, name: 'sale_price' })
   salePrice: number
 
   @Column('decimal', { precision: 5, scale: 2 })
