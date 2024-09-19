@@ -1,17 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { Product } from './entities/product.entity'
-import { UpdateProductDto } from './dto/update-product.dto'
 import { CreateProductDto } from './dto/create-product.dto'
+import { UpdateProductDto } from './dto/update-product.dto'
+import { Product } from './entities/product.entity'
+
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { handleDBExceptions } from 'src/common/helpers'
 
 @Injectable()
 export class ProductsService {
@@ -28,7 +24,7 @@ export class ProductsService {
       await this.productRepository.save(product)
       return product
     } catch (error) {
-      this.handleDBExceptions(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
@@ -60,20 +56,12 @@ export class ProductsService {
       await this.productRepository.save(product)
       return product
     } catch (error) {
-      this.handleDBExceptions(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
   async remove(id: string) {
     const product = await this.findOne(id)
     await this.productRepository.remove(product)
-  }
-
-  private handleDBExceptions(error: any) {
-    this.logger.error(error)
-    if (error.code === '23505')
-      throw new BadRequestException('Product already exists')
-
-    throw new InternalServerErrorException('Unexpected error, contact support')
   }
 }

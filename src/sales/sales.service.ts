@@ -1,15 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
-import { Product } from 'src/products/entities/product.entity'
+import { handleDBExceptions } from 'src/common/helpers'
+import { ProductsService } from 'src/products/products.service'
 
 import { CreateSaleDto } from './dto/create-sale.dto'
 import { UpdateSaleDto } from './dto/update-sale.dto'
@@ -20,8 +15,7 @@ export class SalesService {
   private readonly logger = new Logger(SalesService.name)
 
   constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    private readonly productsService: ProductsService,
 
     @InjectRepository(Sale)
     private readonly saleRepository: Repository<Sale>,
@@ -30,10 +24,7 @@ export class SalesService {
   async create(createSaleDto: CreateSaleDto): Promise<Sale> {
     const { productId, quantity } = createSaleDto
 
-    const product = await this.productRepository.findOneBy({ id: productId })
-    if (!product) {
-      throw new NotFoundException(`Product with ID ${productId} not found`)
-    }
+    const product = await this.productsService.findOne(productId)
 
     try {
       const sale = this.saleRepository.create({
@@ -44,7 +35,7 @@ export class SalesService {
 
       return this.saleRepository.save(sale)
     } catch (error) {
-      this.handleDBExceptions(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
@@ -84,20 +75,12 @@ export class SalesService {
       await this.saleRepository.save(sale)
       return sale
     } catch (error) {
-      this.handleDBExceptions(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
   async remove(id: string) {
     const sale = await this.findOne(id)
     await this.saleRepository.remove(sale)
-  }
-
-  private handleDBExceptions(error: any) {
-    this.logger.error(error)
-    if (error.code === '23505')
-      throw new BadRequestException('Sale already exists')
-
-    throw new InternalServerErrorException('Unexpected error, contact support')
   }
 }

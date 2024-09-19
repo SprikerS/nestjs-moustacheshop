@@ -3,10 +3,12 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { capitalizeEachWord } from 'src/helpers/string.helper'
+import { capitalizeEachWord } from 'src/common/helpers'
+import { Order } from 'src/orders/entities/order.entity'
 
 @Entity()
 export class Employee {
@@ -36,6 +38,9 @@ export class Employee {
 
   @Column('bool', { default: true, name: 'is_active' })
   isActive: boolean
+
+  @OneToMany(() => Order, order => order.employee)
+  orders?: Order[]
 
   @BeforeInsert()
   @BeforeUpdate()

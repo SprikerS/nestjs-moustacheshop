@@ -7,4 +7,7 @@ export class CreateSaleDto {
 
   @IsUUID()
   productId: string
+
+  @IsUUID()
+  orderId: string
 }

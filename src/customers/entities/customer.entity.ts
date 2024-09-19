@@ -3,10 +3,12 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { capitalizeEachWord } from 'src/helpers/string.helper'
+import { capitalizeEachWord } from 'src/common/helpers'
+import { Order } from 'src/orders/entities/order.entity'
 
 @Entity()
 export class Customer {
@@ -24,6 +26,9 @@ export class Customer {
 
   @Column('text', { unique: true })
   dni: string
+
+  @OneToMany(() => Order, order => order.customer)
+  orders?: Order[]
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -5,11 +5,12 @@ import { Sale } from './entities/sale.entity'
 import { SalesController } from './sales.controller'
 import { SalesService } from './sales.service'
 
-import { Product } from 'src/products/entities/product.entity'
+import { ProductsModule } from 'src/products/products.module'
 
 @Module({
   controllers: [SalesController],
   providers: [SalesService],
-  imports: [TypeOrmModule.forFeature([Sale, Product])],
+  imports: [TypeOrmModule.forFeature([Sale]), ProductsModule],
+  exports: [SalesService, TypeOrmModule],
 })
 export class SalesModule {}

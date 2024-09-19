@@ -1,14 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { handleDBExceptions } from 'src/common/helpers'
 
 import { CreateEmployeeDto } from './dto/create-employee.dto'
 import { UpdateEmployeeDto } from './dto/update-employee.dto'
@@ -30,7 +25,7 @@ export class EmployeesService {
       delete employee.password
       return employee
     } catch (error) {
-      this.handleDBErrors(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
@@ -63,20 +58,12 @@ export class EmployeesService {
       await this.employeeRepository.save(employee)
       return employee
     } catch (error) {
-      this.handleDBErrors(error)
+      handleDBExceptions(this.logger, error)
     }
   }
 
   async remove(id: string) {
     const sale = await this.findOne(id)
     await this.employeeRepository.remove(sale)
-  }
-
-  private handleDBErrors(error: any): never {
-    if (error.code === '23505') throw new BadRequestException(error.detail)
-
-    console.log(error)
-
-    throw new InternalServerErrorException('Please check server logs')
   }
 }

@@ -6,6 +6,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
+
+import { Order } from 'src/orders/entities/order.entity'
 import { Product } from 'src/products/entities/product.entity'
 
 @Entity()
@@ -24,6 +26,9 @@ export class Sale {
 
   @ManyToOne(() => Product, product => product.sales)
   product: Product
+
+  @ManyToOne(() => Order, order => order.sales)
+  order: Order
 
   @BeforeInsert()
   @BeforeUpdate()
