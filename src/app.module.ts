@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { CommonModule } from './common/common.module'
+import { CustomersModule } from './customers/customers.module'
 import { EmployeesModule } from './employees/employees.module'
 import { ProductsModule } from './products/products.module'
 import { SalesModule } from './sales/sales.module'
@@ -23,6 +24,7 @@ import { SalesModule } from './sales/sales.module'
       synchronize: true,
     }),
     CommonModule,
+    CustomersModule,
     EmployeesModule,
     ProductsModule,
     SalesModule,
