@@ -10,8 +10,8 @@ import {
 import { Order } from 'src/orders/entities/order.entity'
 import { Product } from 'src/products/entities/product.entity'
 
-@Entity()
-export class Sale {
+@Entity({ name: 'order_details' })
+export class OrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -24,10 +24,10 @@ export class Sale {
   @Column('decimal', { precision: 5, scale: 2 })
   total: number
 
-  @ManyToOne(() => Product, product => product.sales)
+  @ManyToOne(() => Product, product => product.details)
   product: Product
 
-  @ManyToOne(() => Order, order => order.sales)
+  @ManyToOne(() => Order, order => order.details)
   order: Order
 
   @BeforeInsert()

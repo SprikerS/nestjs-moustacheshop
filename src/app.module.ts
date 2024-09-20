@@ -6,9 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { CommonModule } from './common/common.module'
 import { CustomersModule } from './customers/customers.module'
 import { EmployeesModule } from './employees/employees.module'
+import { OrderDetailsModule } from './order-details/order-details.module'
 import { OrdersModule } from './orders/orders.module'
 import { ProductsModule } from './products/products.module'
-import { SalesModule } from './sales/sales.module'
 
 @Module({
   imports: [
@@ -27,9 +27,9 @@ import { SalesModule } from './sales/sales.module'
     CommonModule,
     CustomersModule,
     EmployeesModule,
+    OrderDetailsModule,
     OrdersModule,
     ProductsModule,
-    SalesModule,
   ],
 })
 export class AppModule {}

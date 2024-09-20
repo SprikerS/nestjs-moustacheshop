@@ -1,6 +1,6 @@
 import { IsNumber, IsPositive, IsUUID } from 'class-validator'
 
-export class CreateSaleDto {
+export class CreateOrderDetailDto {
   @IsNumber()
   @IsPositive()
   quantity: number

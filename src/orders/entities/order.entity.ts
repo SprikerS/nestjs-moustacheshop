@@ -8,7 +8,7 @@ import {
 
 import { Customer } from 'src/customers/entities/customer.entity'
 import { Employee } from 'src/employees/entities/employee.entity'
-import { Sale } from 'src/sales/entities/sale.entity'
+import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
 
 @Entity()
 export class Order {
@@ -18,8 +18,8 @@ export class Order {
   @Column('date', { name: 'order_date' })
   orderDate: Date
 
-  @OneToMany(() => Sale, sale => sale.order)
-  sales?: Sale[]
+  @OneToMany(() => OrderDetail, detail => detail.order)
+  details?: OrderDetail[]
 
   @ManyToOne(() => Employee, employee => employee.orders)
   employee: Employee

@@ -7,8 +7,8 @@ import { OrdersService } from './orders.service'
 
 import { CustomersModule } from 'src/customers/customers.module'
 import { EmployeesModule } from 'src/employees/employees.module'
+import { OrderDetailsModule } from 'src/order-details/order-details.module'
 import { ProductsModule } from 'src/products/products.module'
-import { SalesModule } from 'src/sales/sales.module'
 
 @Module({
   controllers: [OrdersController],
@@ -18,7 +18,7 @@ import { SalesModule } from 'src/sales/sales.module'
     CustomersModule,
     EmployeesModule,
     ProductsModule,
-    SalesModule,
+    OrderDetailsModule,
   ],
 })
 export class OrdersModule {}

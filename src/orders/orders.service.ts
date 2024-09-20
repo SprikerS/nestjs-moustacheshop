@@ -8,7 +8,7 @@ import { Order } from './entities/order.entity'
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
-import { Sale } from 'src/sales/entities/sale.entity'
+import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
 
 import { CustomersService } from 'src/customers/customers.service'
 import { EmployeesService } from 'src/employees/employees.service'
@@ -24,11 +24,11 @@ export class OrdersService {
     private readonly employeesService: EmployeesService,
     private readonly productsService: ProductsService,
 
-    @InjectRepository(Sale)
-    private readonly saleRepository: Repository<Sale>,
-
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+
+    @InjectRepository(OrderDetail)
+    private readonly detailRepository: Repository<OrderDetail>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -56,7 +56,7 @@ export class OrdersService {
 
           const product = await this.productsService.findOne(productId)
 
-          return this.saleRepository.create({
+          return this.detailRepository.create({
             quantity,
             salePrice: product.price,
             product,
@@ -87,17 +87,17 @@ export class OrdersService {
   }
 
   async findOne(id: string) {
-    const order = await this.orderRepository.findOneBy({ id })
-    if (!order) throw new NotFoundException(`Order with ID ${id} not found`)
-
-    return this.orderRepository.findOne({
+    const order = await this.orderRepository.findOne({
       where: { id },
       relations: {
         customer: true,
         employee: true,
-        sales: true,
+        details: true,
       },
     })
+
+    if (!order) throw new NotFoundException(`Order with ID ${id} not found`)
+    return order
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
