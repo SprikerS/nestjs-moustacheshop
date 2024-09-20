@@ -92,7 +92,9 @@ export class OrdersService {
       relations: {
         customer: true,
         employee: true,
-        details: true,
+        details: {
+          product: true,
+        },
       },
     })
 

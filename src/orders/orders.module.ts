@@ -20,5 +20,6 @@ import { ProductsModule } from 'src/products/products.module'
     ProductsModule,
     OrderDetailsModule,
   ],
+  exports: [OrdersService, TypeOrmModule],
 })
 export class OrdersModule {}
