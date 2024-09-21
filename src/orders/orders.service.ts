@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { DataSource, Repository } from 'typeorm'
+import { DataSource, In, Repository } from 'typeorm'
 
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
@@ -9,10 +9,10 @@ import { Order } from './entities/order.entity'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
+import { Product } from 'src/products/entities/product.entity'
 
 import { CustomersService } from 'src/customers/customers.service'
 import { EmployeesService } from 'src/employees/employees.service'
-import { ProductsService } from 'src/products/products.service'
 
 @Injectable()
 export class OrdersService {
@@ -22,13 +22,15 @@ export class OrdersService {
     private readonly dataSource: DataSource,
     private readonly customersService: CustomersService,
     private readonly employeesService: EmployeesService,
-    private readonly productsService: ProductsService,
 
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
 
     @InjectRepository(OrderDetail)
     private readonly detailRepository: Repository<OrderDetail>,
+
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -50,11 +52,21 @@ export class OrdersService {
 
       await queryRunner.manager.save(order)
 
-      const sales = await Promise.all(
-        products.map(async sale => {
-          const { productId, quantity } = sale
+      const pIDS = products.map(product => product.productId)
+      const pEnts = await this.productRepository.findBy({ id: In(pIDS) })
+      const productMap = new Map(pEnts.map(product => [product.id, product]))
 
-          const product = await this.productsService.findOne(productId)
+      products.forEach(({ productId, quantity }) => {
+        const { name, stock } = productMap.get(productId)
+        if (stock < quantity)
+          throw new Error(`Product ${name} has only ${stock} units in stock`)
+      })
+
+      const sales = await Promise.all(
+        products.map(async ({ productId, quantity }) => {
+          const product = productMap.get(productId)
+          product.stock -= quantity
+          await queryRunner.manager.save(product)
 
           return this.detailRepository.create({
             quantity,
@@ -77,12 +89,19 @@ export class OrdersService {
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { limit = 20, offset = 0 } = paginationDto
 
-    return this.orderRepository.find({
+    return await this.orderRepository.find({
       take: limit,
       skip: offset,
+      relations: {
+        customer: true,
+        employee: true,
+        details: {
+          product: true,
+        },
+      },
     })
   }
 
@@ -119,7 +138,28 @@ export class OrdersService {
   }
 
   async remove(id: string) {
-    const order = await this.findOne(id)
-    await this.orderRepository.remove(order)
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
+    try {
+      const order = await this.findOne(id)
+      const { details = [] } = order
+
+      await Promise.all(
+        details.map(async ({ product, quantity }) => {
+          product.stock += quantity
+          await queryRunner.manager.save(product)
+        }),
+      )
+
+      await queryRunner.manager.remove(order)
+      await queryRunner.commitTransaction()
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      handleDBExceptions(this.logger, error)
+    } finally {
+      await queryRunner.release()
+    }
   }
 }

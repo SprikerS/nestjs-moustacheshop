@@ -27,7 +27,7 @@ export class OrderDetail {
   @ManyToOne(() => Product, product => product.details)
   product: Product
 
-  @ManyToOne(() => Order, order => order.details)
+  @ManyToOne(() => Order, order => order.details, { onDelete: 'CASCADE' })
   order: Order
 
   @BeforeInsert()
