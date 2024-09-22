@@ -6,9 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { Customer } from 'src/customers/entities/customer.entity'
-import { Employee } from 'src/employees/entities/employee.entity'
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
+import { User } from 'src/user/entities/user.entity'
 
 @Entity()
 export class Order {
@@ -21,9 +20,9 @@ export class Order {
   @OneToMany(() => OrderDetail, detail => detail.order)
   details?: OrderDetail[]
 
-  @ManyToOne(() => Employee, employee => employee.orders)
-  employee: Employee
+  @ManyToOne(() => User, user => user.sales)
+  employee: User
 
-  @ManyToOne(() => Customer, customer => customer.orders)
-  customer: Customer
+  @ManyToOne(() => User, user => user.purchases)
+  customer: User
 }

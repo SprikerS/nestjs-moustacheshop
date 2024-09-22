@@ -10,9 +10,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
 import { Product } from 'src/products/entities/product.entity'
-
-import { CustomersService } from 'src/customers/customers.service'
-import { EmployeesService } from 'src/employees/employees.service'
+import { UserService } from 'src/user/user.service'
 
 @Injectable()
 export class OrdersService {
@@ -20,8 +18,7 @@ export class OrdersService {
 
   constructor(
     private readonly dataSource: DataSource,
-    private readonly customersService: CustomersService,
-    private readonly employeesService: EmployeesService,
+    private readonly userService: UserService,
 
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
@@ -36,8 +33,8 @@ export class OrdersService {
   async create(createOrderDto: CreateOrderDto) {
     const { products = [], employeeId, customerId, orderDate } = createOrderDto
 
-    const customer = await this.customersService.findOne(customerId)
-    const employee = await this.employeesService.findOne(employeeId)
+    const customer = await this.userService.findOne(customerId)
+    const employee = await this.userService.findOne(employeeId)
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()

@@ -1,12 +1,14 @@
 import * as cheerio from 'cheerio'
-import { CookieJar } from 'tough-cookie'
-import fetch from 'node-fetch-commonjs'
+
 import FetchCookie from 'fetch-cookie'
+import fetch from 'node-fetch-commonjs'
+import { CookieJar } from 'tough-cookie'
+import { BaseUserDto } from '../dto'
 
 const cookieJar = new CookieJar()
 const fetchWithCookies = FetchCookie(fetch, cookieJar)
 
-const scrapingDNI = async (dni: string) => {
+const scrapingDNI = async (dni: string): Promise<BaseUserDto> => {
   try {
     const response = await fetchWithCookies('https://eldni.com')
     const html = await response.text()
@@ -50,6 +52,7 @@ ${dni}
     const maternalSurname = divCopy.find('input#apellidom').val() as string
 
     return {
+      dni,
       names,
       paternalSurname,
       maternalSurname,

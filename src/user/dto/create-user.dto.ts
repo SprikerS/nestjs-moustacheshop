@@ -1,9 +1,12 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
+  IsEnum,
   IsInt,
+  IsOptional,
   IsPositive,
   IsString,
-  Length,
   Matches,
   Max,
   MaxLength,
@@ -11,19 +14,10 @@ import {
   MinLength,
 } from 'class-validator'
 
-export class CreateEmployeeDto {
-  @IsString()
-  @MinLength(1)
-  names: string
+import { ValidRoles } from '../interfaces/valid-roles'
+import { BaseUserDto } from './base-user.dto'
 
-  @IsString()
-  @MinLength(1)
-  paternalSurname: string
-
-  @IsString()
-  @MinLength(1)
-  maternalSurname: string
-
+export class CreateUserDto extends BaseUserDto {
   @IsString()
   @IsEmail()
   email: string
@@ -37,13 +31,16 @@ export class CreateEmployeeDto {
   })
   password: string
 
-  @IsString()
-  @Length(8, 8, { message: 'the dni must have 8 digits' })
-  dni: string
-
+  @IsOptional()
   @IsInt()
   @IsPositive()
   @Min(900000000, { message: 'the phone number must have 9 digits' })
   @Max(999999999, { message: 'the phone number must have 9 digits' })
   phoneNumber: number
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsEnum(ValidRoles, { each: true, message: 'each role must be a valid role' })
+  roles: ValidRoles[]
 }

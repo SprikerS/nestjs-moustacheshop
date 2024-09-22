@@ -4,13 +4,12 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { CommonModule } from './common/common.module'
-import { CustomersModule } from './customers/customers.module'
-import { EmployeesModule } from './employees/employees.module'
 import { OrderDetailsModule } from './order-details/order-details.module'
 import { OrdersModule } from './orders/orders.module'
 import { PrinterModule } from './printer/printer.module'
 import { ProductsModule } from './products/products.module'
 import { StoreReportsModule } from './store-reports/store-reports.module'
+import { UserModule } from './user/user.module'
 
 @Module({
   imports: [
@@ -27,13 +26,12 @@ import { StoreReportsModule } from './store-reports/store-reports.module'
       synchronize: true,
     }),
     CommonModule,
-    CustomersModule,
-    EmployeesModule,
     OrderDetailsModule,
     OrdersModule,
     PrinterModule,
     ProductsModule,
     StoreReportsModule,
+    UserModule,
   ],
 })
 export class AppModule {}
