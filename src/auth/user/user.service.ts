@@ -1,10 +1,18 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
+import * as bcrypt from 'bcrypt'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
-import { BaseUserDto, CreateUserDto, UpdateUserDto } from './dto'
+import { JwtPayload } from '../interfaces'
+import { BaseUserDto, CreateUserDto, LoginUserDto, UpdateUserDto } from './dto'
 import { User } from './entities/user.entity'
 import { scrapingDNI } from './utils/scraping-dni'
 
@@ -15,16 +23,61 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    private readonly jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: BaseUserDto | CreateUserDto) {
+  private getJwtToken(payload: JwtPayload) {
+    return this.jwtService.sign(payload)
+  }
+
+  async create(registerDto: BaseUserDto | CreateUserDto) {
     try {
-      const user = this.userRepository.create(createUserDto)
+      let user: User
+
+      if ('password' in registerDto) {
+        const { password, ...data } = registerDto
+        user = this.userRepository.create({
+          password: await bcrypt.hash(password, 10),
+          ...data,
+        })
+      } else {
+        user = this.userRepository.create(registerDto)
+      }
+
       await this.userRepository.save(user)
       delete user.password
-      return user
+
+      return {
+        ...user,
+        token: this.getJwtToken({ id: user.id }),
+      }
     } catch (error) {
       handleDBExceptions(this.logger, error)
+    }
+  }
+
+  async login({ email, password }: LoginUserDto) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: { id: true, password: true },
+    })
+
+    if (!user) throw new UnauthorizedException('Invalid credentials')
+
+    if (!bcrypt.compareSync(password, user.password))
+      throw new UnauthorizedException('Invalid credentials')
+
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id }),
+    }
+  }
+
+  async checkAuthStatus(user: User) {
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id }),
     }
   }
 

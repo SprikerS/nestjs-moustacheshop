@@ -7,7 +7,7 @@ import {
 } from 'typeorm'
 
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
-import { User } from 'src/user/entities/user.entity'
+import { User } from 'src/auth/user/entities/user.entity'
 
 @Entity()
 export class Order {

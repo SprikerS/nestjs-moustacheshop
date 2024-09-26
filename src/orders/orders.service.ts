@@ -6,11 +6,11 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { Order } from './entities/order.entity'
 
+import { UserService } from 'src/auth/user/user.service'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
 import { Product } from 'src/products/entities/product.entity'
-import { UserService } from 'src/user/user.service'
 
 @Injectable()
 export class OrdersService {

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -10,28 +11,43 @@ import {
   Query,
 } from '@nestjs/common'
 
-import { UserService } from './user.service'
-import { BaseUserDto, CreateUserDto, UpdateUserDto } from './dto'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { Auth, GetUser } from '../decorators'
+import { ValidRoles } from '../interfaces'
+import { BaseUserDto, CreateUserDto, LoginUserDto, UpdateUserDto } from './dto'
+import { User } from './entities/user.entity'
+import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
-  create(@Body() createUserDto: CreateUserDto | BaseUserDto) {
+  registerUser(@Body() createUserDto: CreateUserDto | BaseUserDto) {
     return this.userService.create(createUserDto)
   }
 
-  @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.userService.findAll(paginationDto)
+  @Post('login')
+  @HttpCode(200)
+  loginUser(@Body() loginUserDto: LoginUserDto) {
+    return this.userService.login(loginUserDto)
+  }
+
+  @Get('check-auth-status')
+  @Auth()
+  checkAuthStatus(@GetUser() user: User) {
+    return this.userService.checkAuthStatus(user)
   }
 
   @Post('scraping/:dni')
   mutationByDNI(@Param('dni') dni: string, @Query() query: { saved: string }) {
     const saved = query.saved === 'true'
     return this.userService.mutationByDNI(dni, saved)
+  }
+
+  @Get()
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.userService.findAll(paginationDto)
   }
 
   @Get(':id')

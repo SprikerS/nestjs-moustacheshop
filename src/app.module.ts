@@ -3,13 +3,13 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
+import { AuthModule } from './auth/auth.module'
 import { CommonModule } from './common/common.module'
 import { OrderDetailsModule } from './order-details/order-details.module'
 import { OrdersModule } from './orders/orders.module'
 import { PrinterModule } from './printer/printer.module'
 import { ProductsModule } from './products/products.module'
 import { StoreReportsModule } from './store-reports/store-reports.module'
-import { UserModule } from './user/user.module'
 
 @Module({
   imports: [
@@ -25,13 +25,13 @@ import { UserModule } from './user/user.module'
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AuthModule,
     CommonModule,
     OrderDetailsModule,
     OrdersModule,
     PrinterModule,
     ProductsModule,
     StoreReportsModule,
-    UserModule,
   ],
 })
 export class AppModule {}

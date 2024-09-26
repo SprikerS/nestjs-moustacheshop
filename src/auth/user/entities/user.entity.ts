@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
+import { ValidRoles } from 'src/auth/interfaces'
 import { capitalizeEachWord } from 'src/common/helpers'
 import { Order } from 'src/orders/entities/order.entity'
-import { ValidRoles } from '../interfaces/valid-roles'
 
 @Entity()
 export class User {

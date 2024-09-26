@@ -5,9 +5,9 @@ import { Order } from './entities/order.entity'
 import { OrdersController } from './orders.controller'
 import { OrdersService } from './orders.service'
 
+import { AuthModule } from 'src/auth/auth.module'
 import { OrderDetailsModule } from 'src/order-details/order-details.module'
 import { ProductsModule } from 'src/products/products.module'
-import { UserModule } from 'src/user/user.module'
 
 @Module({
   controllers: [OrdersController],
@@ -16,7 +16,7 @@ import { UserModule } from 'src/user/user.module'
     TypeOrmModule.forFeature([Order]),
     OrderDetailsModule,
     ProductsModule,
-    UserModule,
+    AuthModule,
   ],
   exports: [OrdersService, TypeOrmModule],
 })

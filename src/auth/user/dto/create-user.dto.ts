@@ -14,7 +14,7 @@ import {
   MinLength,
 } from 'class-validator'
 
-import { ValidRoles } from '../interfaces/valid-roles'
+import { ValidRoles } from 'src/auth/interfaces'
 import { BaseUserDto } from './base-user.dto'
 
 export class CreateUserDto extends BaseUserDto {
