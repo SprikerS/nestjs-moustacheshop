@@ -1,6 +1,5 @@
 import { IsArray, IsDateString, IsUUID } from 'class-validator'
-
-import { CreateOrderDetailDto } from 'src/order-details/dto/create-order-detail.dto'
+import { CreateOrderDetailDto } from './create-order-detail.dto'
 
 export class CreateOrderDto {
   @IsDateString()

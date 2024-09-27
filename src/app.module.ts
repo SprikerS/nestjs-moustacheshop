@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { AuthModule } from './auth/auth.module'
 import { CommonModule } from './common/common.module'
-import { OrderDetailsModule } from './order-details/order-details.module'
 import { OrdersModule } from './orders/orders.module'
 import { PrinterModule } from './printer/printer.module'
 import { ProductsModule } from './products/products.module'
@@ -27,7 +26,6 @@ import { StoreReportsModule } from './store-reports/store-reports.module'
     }),
     AuthModule,
     CommonModule,
-    OrderDetailsModule,
     OrdersModule,
     PrinterModule,
     ProductsModule,

@@ -8,17 +8,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, In, QueryRunner, Repository } from 'typeorm'
 
-import { CreateOrderDto } from './dto/create-order.dto'
-import { UpdateOrderDto } from './dto/update-order.dto'
-import { Order } from './entities/order.entity'
-
 import { ValidRoles } from 'src/auth/interfaces'
 import { User, UserService } from 'src/auth/user'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
-import { CreateOrderDetailDto } from 'src/order-details/dto/create-order-detail.dto'
-import { OrderDetail } from 'src/order-details/entities/order-detail.entity'
 import { Product } from 'src/products/entities/product.entity'
+import { CreateOrderDetailDto, CreateOrderDto, UpdateOrderDto } from './dto'
+import { Order, OrderDetail } from './entities'
 
 @Injectable()
 export class OrdersService {
