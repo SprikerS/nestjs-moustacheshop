@@ -7,9 +7,6 @@ export class CreateOrderDto {
   orderDate: Date
 
   @IsUUID()
-  employeeId: string
-
-  @IsUUID()
   customerId: string
 
   @IsArray()
