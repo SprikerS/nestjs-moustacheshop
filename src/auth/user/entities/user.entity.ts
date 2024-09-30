@@ -4,12 +4,14 @@ import {
   Column,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
 import { ValidRoles } from 'src/auth/interfaces'
 import { capitalizeEachWord } from 'src/common/helpers'
 import { Order } from 'src/orders/entities/order.entity'
+import { PasswordRecovery } from './password.recovery'
 
 @Entity()
 export class User {
@@ -48,6 +50,9 @@ export class User {
 
   @OneToMany(() => Order, order => order.customer)
   purchases?: Order[]
+
+  @OneToOne(() => PasswordRecovery, pass => pass.user, { onDelete: 'CASCADE' })
+  pwdRec?: PasswordRecovery
 
   @BeforeInsert()
   @BeforeUpdate()

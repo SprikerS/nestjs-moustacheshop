@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -14,13 +15,47 @@ import {
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { Auth, GetUser } from '../decorators'
 import { ValidRoles } from '../interfaces'
-import { BaseUserDto, CreateUserDto, LoginUserDto, UpdateUserDto } from './dto'
+import {
+  BaseUserDto,
+  ChangePasswordDto,
+  CreateUserDto,
+  ForgotPasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+  UpdateUserDto,
+} from './dto'
 import { User } from './entities/user.entity'
+import { ResetPwdQuery } from './interfaces'
 import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('change-password')
+  @Auth(ValidRoles.EMPLOYEE)
+  @HttpCode(HttpStatus.OK)
+  changePassword(
+    @GetUser() user: User,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(user, changePasswordDto)
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.userService.forgotPassword(forgotPasswordDto)
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  resetPassword(
+    @Query() query: ResetPwdQuery,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ) {
+    return this.userService.resetPassword(query, resetPasswordDto)
+  }
 
   @Post('register')
   registerUser(@Body() createUserDto: CreateUserDto | BaseUserDto) {
@@ -28,7 +63,7 @@ export class UserController {
   }
 
   @Post('login')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.userService.login(loginUserDto)
   }

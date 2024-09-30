@@ -1,4 +1,7 @@
 export { BaseUserDto } from './base-user.dto'
+export { ChangePasswordDto } from './change-password.dto'
 export { CreateUserDto } from './create-user.dto'
+export { ForgotPasswordDto } from './forgot-password.dto'
 export { LoginUserDto } from './login-user.dto'
+export { ResetPasswordDto } from './reset-password.dto'
 export { UpdateUserDto } from './update-user.dto'

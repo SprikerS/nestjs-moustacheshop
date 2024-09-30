@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -6,14 +7,24 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 
 import * as bcrypt from 'bcrypt'
 import { PaginationDto } from 'src/common/dtos/pagination.dto'
 import { handleDBExceptions } from 'src/common/helpers'
-import { JwtPayload } from '../interfaces'
-import { BaseUserDto, CreateUserDto, LoginUserDto, UpdateUserDto } from './dto'
-import { User } from './entities/user.entity'
+import { MailService } from 'src/mail/mail.service'
+import { JwtPayload, JwtPayloadForgotPassword } from '../interfaces'
+import {
+  BaseUserDto,
+  ChangePasswordDto,
+  CreateUserDto,
+  ForgotPasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+  UpdateUserDto,
+} from './dto'
+import { PasswordRecovery, User } from './entities'
+import { ResetPwdQuery } from './interfaces'
 import { scrapingDNI } from './utils/scraping-dni'
 
 @Injectable()
@@ -24,11 +35,143 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
+    @InjectRepository(PasswordRecovery)
+    private readonly pwdRecRepository: Repository<PasswordRecovery>,
+
+    private readonly dataSource: DataSource,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   private getJwtToken(payload: JwtPayload) {
     return this.jwtService.sign(payload)
+  }
+
+  private getJwtForgotPasswordToken(payload: JwtPayloadForgotPassword) {
+    return this.jwtService.sign(payload, { expiresIn: '15m' })
+  }
+
+  private async verifyAccessUser(email: string, id: string | null = null) {
+    const queryBuilder = this.userRepository.createQueryBuilder('qbUser')
+    const user = await queryBuilder
+      .addSelect('qbUser.password')
+      .where('qbUser.email =:email', { email })
+      .getOne()
+
+    if (!user) throw new NotFoundException(`User with email ${email} not found`)
+    if (!id) return user
+
+    if (user.id !== id)
+      throw new ForbiddenException(`User with ID ${id} can't access this data`)
+
+    return user
+  }
+
+  async changePassword(
+    { id }: User,
+    { email, oldPassword, newPassword }: ChangePasswordDto,
+  ) {
+    try {
+      const user = await this.verifyAccessUser(email, id)
+      if (!bcrypt.compareSync(oldPassword, user.password))
+        throw new UnauthorizedException('Invalid old password')
+
+      user.password = await bcrypt.hash(newPassword, 10)
+      await this.userRepository.save(user)
+      await this.mailService.notifyPasswordChange(user)
+      delete user.password
+
+      return {
+        status: 'success',
+        message: 'Password changed successfully',
+        user,
+      }
+    } catch (error) {
+      handleDBExceptions(this.logger, error)
+    }
+  }
+
+  async forgotPassword({ email }: ForgotPasswordDto) {
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
+    try {
+      const user = await this.verifyAccessUser(email)
+
+      const code = Math.floor(100000 + Math.random() * 900000).toString()
+      const jwt = this.getJwtForgotPasswordToken({ email, code })
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+
+      let recovery = await this.pwdRecRepository.findOne({
+        where: { user },
+        relations: { user: true },
+      })
+
+      if (!recovery) {
+        recovery = this.pwdRecRepository.create({ code, jwt, user, expiresAt })
+      } else {
+        recovery.jwt = jwt
+        recovery.code = code
+        recovery.expiresAt = expiresAt
+      }
+
+      await queryRunner.manager.save(recovery)
+      await this.mailService.sendForgotPasswordEmail(code, jwt, user)
+      await queryRunner.commitTransaction()
+
+      return {
+        status: 'success',
+        message: `Forgot password email sent to ${email}`,
+        recovery,
+      }
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      handleDBExceptions(this.logger, error)
+    } finally {
+      await queryRunner.release()
+    }
+  }
+
+  async resetPassword(
+    { token, code }: ResetPwdQuery,
+    { password }: ResetPasswordDto,
+  ) {
+    if (!code && !token)
+      throw new UnauthorizedException('Invalid token or code')
+    if (code && code.length !== 6)
+      throw new UnauthorizedException(`Length of code must be 6`)
+
+    const queryBuilder = this.pwdRecRepository.createQueryBuilder('qbPWD')
+    const pwdRec = await queryBuilder
+      .leftJoinAndSelect('qbPWD.user', 'user')
+      .addSelect('user.password')
+      .where('qbPWD.code =:code OR qbPWD.jwt =:token', { code, token })
+      .getOne()
+
+    if (!pwdRec) throw new UnauthorizedException('Invalid code or token')
+    if (code && pwdRec.expiresAt < new Date())
+      throw new UnauthorizedException('Your code or token has expired')
+
+    try {
+      if (token) this.jwtService.verify(token)
+
+      const { user } = pwdRec
+      user.password = await bcrypt.hash(password, 10)
+
+      await this.userRepository.save(user)
+      await this.pwdRecRepository.remove(pwdRec)
+      await this.mailService.notifyPasswordChange(user)
+      delete user.password
+
+      return {
+        status: 'success',
+        message: 'Password reset successfully',
+        user,
+      }
+    } catch (error) {
+      handleDBExceptions(this.logger, error)
+    }
   }
 
   async create(registerDto: BaseUserDto | CreateUserDto) {

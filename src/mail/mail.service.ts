@@ -4,7 +4,13 @@ import fs from 'node:fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { ForgotPasswordMailDto } from './dto'
+import { User } from 'src/auth/user'
+import { EmailSendingException } from 'src/common/helpers'
+
+enum TEMPLATES {
+  FORGOT_PASSWORD = './forgot-password',
+  CHANGE_PASSWORD = './change-password',
+}
 
 @Injectable()
 export class MailService {
@@ -12,33 +18,59 @@ export class MailService {
 
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendForgotPassword({ email, names, code, url }: ForgotPasswordMailDto) {
+  async sendForgotPasswordEmail(code: string, jwt: string, user: User) {
+    const url = `${process.env.FRONTEND_URL}/auth/reset-password?token=${jwt}`
+    return this.sendEmail(
+      user,
+      'Restablecimiento de contraseña de Tienda Bigotes',
+      TEMPLATES.FORGOT_PASSWORD,
+      { code, url },
+    )
+  }
+
+  async notifyPasswordChange(user: User) {
+    return this.sendEmail(
+      user,
+      'Confirmación de cambio de contraseña de Tienda Bigotes',
+      TEMPLATES.CHANGE_PASSWORD,
+    )
+  }
+
+  private async sendEmail(
+    { email, names }: User,
+    subject: string,
+    template: TEMPLATES,
+    context: Record<string, any> = {},
+  ) {
     const logoBuffer = await this.getBufferFromAsset('shop-logo.png')
+    const logoBase64 = logoBuffer.toString('base64')
 
     try {
       await this.mailerService.sendMail({
         to: email,
-        subject: 'Restablecimiento de contraseña de Tienda Bigotes',
-        template: './forgot-password',
+        subject,
+        template,
         context: {
           names,
           email,
-          code,
-          url,
+          ...context,
         },
         attachments: [
           {
-            filename: 'shop-logo.png',
-            content: logoBuffer,
-            encoding: 'base64',
             cid: 'shop-logo',
+            content: Buffer.from(logoBase64, 'base64'),
+            contentDisposition: 'inline',
+            contentTransferEncoding: 'base64',
+            contentType: 'image/png',
+            encoding: 'base64',
+            filename: 'shop-logo.png',
           },
         ],
       })
-      this.logger.log(`Forgot password email sent to ${email}`)
+      this.logger.log(`${subject} email sent to ${email}`)
     } catch (error) {
-      this.logger.error(
-        `Failed to send Forgot password email to ${email} - ${error.message}`,
+      throw new EmailSendingException(
+        `Failed to send ${subject} email to ${email} - ${error.message}`,
       )
     }
   }
