@@ -51,7 +51,7 @@ export class UserService {
     return this.jwtService.sign(payload, { expiresIn: '15m' })
   }
 
-  private async verifyAccessUser(email: string, id: string | null = null) {
+  private async findUserByEmail(email: string, id: string | null = null) {
     const queryBuilder = this.userRepository.createQueryBuilder('qbUser')
     const user = await queryBuilder
       .addSelect('qbUser.password')
@@ -72,7 +72,7 @@ export class UserService {
     { email, oldPassword, newPassword }: ChangePasswordDto,
   ) {
     try {
-      const user = await this.verifyAccessUser(email, id)
+      const user = await this.findUserByEmail(email, id)
       if (!bcrypt.compareSync(oldPassword, user.password))
         throw new UnauthorizedException('Invalid old password')
 
@@ -97,7 +97,7 @@ export class UserService {
     await queryRunner.startTransaction()
 
     try {
-      const user = await this.verifyAccessUser(email)
+      const user = await this.findUserByEmail(email)
 
       const code = Math.floor(100000 + Math.random() * 900000).toString()
       const jwt = this.getJwtForgotPasswordToken({ email, code })
@@ -201,15 +201,12 @@ export class UserService {
   }
 
   async login({ email, password }: LoginUserDto) {
-    const user = await this.userRepository.findOne({
-      where: { email },
-      select: { id: true, password: true },
-    })
-
-    if (!user) throw new UnauthorizedException('Invalid credentials')
+    const user = await this.findUserByEmail(email)
 
     if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Invalid credentials')
+
+    delete user.password
 
     return {
       ...user,
