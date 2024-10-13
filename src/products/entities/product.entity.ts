@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
+import { ColumnNumericTransformer } from 'src/common/helpers'
 import { OrderDetail } from 'src/orders/entities'
 
 @Entity()
@@ -10,7 +11,11 @@ export class Product {
   @Column('text', { unique: true })
   name: string
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', {
+    precision: 5,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   price: number
 
   @Column('int')

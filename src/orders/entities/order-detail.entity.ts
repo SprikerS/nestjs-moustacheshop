@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
+import { ColumnNumericTransformer } from 'src/common/helpers'
 import { Product } from 'src/products/entities/product.entity'
 import { Order } from './order.entity'
 
@@ -18,10 +19,19 @@ export class OrderDetail {
   @Column('int')
   quantity: number
 
-  @Column('decimal', { precision: 5, scale: 2, name: 'sale_price' })
+  @Column('decimal', {
+    name: 'sale_price',
+    precision: 5,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   salePrice: number
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', {
+    precision: 5,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   total: number
 
   @ManyToOne(() => Product, product => product.details)
