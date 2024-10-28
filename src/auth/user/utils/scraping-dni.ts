@@ -3,7 +3,9 @@ import * as cheerio from 'cheerio'
 import FetchCookie from 'fetch-cookie'
 import fetch from 'node-fetch-commonjs'
 import { CookieJar } from 'tough-cookie'
+
 import { BaseUserDto } from '../dto'
+import { capitalizeEachWord } from 'src/common/helpers'
 
 const cookieJar = new CookieJar()
 const fetchWithCookies = FetchCookie(fetch, cookieJar)
@@ -53,9 +55,9 @@ ${dni}
 
     return {
       dni,
-      names,
-      paternalSurname,
-      maternalSurname,
+      names: capitalizeEachWord(names),
+      paternalSurname: capitalizeEachWord(paternalSurname),
+      maternalSurname: capitalizeEachWord(maternalSurname),
     }
   } catch (error) {
     console.log(error)

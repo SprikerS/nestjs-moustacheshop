@@ -174,19 +174,13 @@ export class UserService {
     }
   }
 
-  async create(registerDto: BaseUserDto | CreateUserDto) {
+  async create(registerDto: CreateUserDto) {
     try {
-      let user: User
-
-      if ('password' in registerDto) {
-        const { password, ...data } = registerDto
-        user = this.userRepository.create({
-          password: await bcrypt.hash(password, 10),
-          ...data,
-        })
-      } else {
-        user = this.userRepository.create(registerDto)
-      }
+      const { password, ...data } = registerDto
+      const user = this.userRepository.create({
+        password: await bcrypt.hash(password, 10),
+        ...data,
+      })
 
       await this.userRepository.save(user)
       delete user.password
@@ -221,15 +215,20 @@ export class UserService {
     }
   }
 
-  async mutationByDNI(dni: string, saved: boolean) {
-    let user: User | BaseUserDto
+  async srapingReniec(dni: string) {
+    const userDB = await this.userRepository.findOneBy({ dni })
+    if (userDB) {
+      const { dni, names, paternalSurname, maternalSurname } = userDB
 
-    user = await this.userRepository.findOneBy({ dni })
-    if (user) return user
+      return {
+        dni,
+        names,
+        paternalSurname,
+        maternalSurname,
+      }
+    }
 
-    user = await scrapingDNI(dni)
-    if (saved) user = await this.create(user)
-
+    const user = await scrapingDNI(dni)
     return user
   }
 

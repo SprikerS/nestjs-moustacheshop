@@ -58,7 +58,7 @@ export class UserController {
   }
 
   @Post('register')
-  registerUser(@Body() createUserDto: CreateUserDto | BaseUserDto) {
+  registerUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto)
   }
 
@@ -74,10 +74,10 @@ export class UserController {
     return this.userService.checkAuthStatus(user)
   }
 
-  @Post('scraping/:dni')
-  mutationByDNI(@Param('dni') dni: string, @Query() query: { saved: string }) {
-    const saved = query.saved === 'true'
-    return this.userService.mutationByDNI(dni, saved)
+  @Get('reniec')
+  @HttpCode(HttpStatus.OK)
+  srapingReniec(@Query('dni') dni?: string) {
+    return this.userService.srapingReniec(dni)
   }
 
   @Get()
