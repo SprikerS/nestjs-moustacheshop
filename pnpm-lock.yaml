@@ -111,6 +111,9 @@ importers:
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
+      '@types/pdfkit':
+        specifier: ^0.13.5
+        version: 0.13.5
       '@types/pdfmake':
         specifier: ^0.2.9
         version: 0.2.9
