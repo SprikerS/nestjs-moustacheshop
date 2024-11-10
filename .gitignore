@@ -1,6 +1,7 @@
 # custom
 pgadmin
 postgres
+/.vercel
 
 # compiled output
 /dist
