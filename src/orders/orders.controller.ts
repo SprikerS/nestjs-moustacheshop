@@ -12,7 +12,7 @@ import {
 
 import { Auth, GetUser } from '../auth/decorators'
 import { ValidRoles } from '../auth/interfaces'
-import { User } from '../auth/user'
+import { User } from '../auth/user/entities'
 import { PaginationDto } from '../common/dtos/pagination.dto'
 import { CreateOrderDto, UpdateOrderDto } from './dto'
 import { OrdersService } from './orders.service'

@@ -4,10 +4,11 @@ import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { MailModule } from '../mail/mail.module'
 import { JwtStrategy } from './strategies/jwt.strategy'
-import { UserController, UserService } from './user'
+import { MailModule } from '../mail/mail.module'
 import { PasswordRecovery, User } from './user/entities'
+import { UserController } from './user/user.controller'
+import { UserService } from './user/user.service'
 
 @Module({
   controllers: [UserController],

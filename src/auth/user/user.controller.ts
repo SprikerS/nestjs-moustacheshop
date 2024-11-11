@@ -24,7 +24,7 @@ import {
   ResetPasswordDto,
   UpdateUserDto,
 } from './dto'
-import { User } from './entities/user.entity'
+import { User } from './entities'
 import { ResetPwdQuery } from './interfaces'
 import { UserService } from './user.service'
 

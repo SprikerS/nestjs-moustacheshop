@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { ValidRoles } from '../../../auth/interfaces'
+import { ValidRoles } from '../../interfaces'
 import { capitalizeEachWord } from '../../../common/helpers'
 import { Order } from '../../../orders/entities'
 import { PasswordRecovery } from './password.recovery'

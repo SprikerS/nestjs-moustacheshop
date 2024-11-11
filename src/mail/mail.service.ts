@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { User } from '../auth/user'
+import { User } from '../auth/user/entities'
 import { EmailSendingException } from '../common/helpers'
 
 enum TEMPLATES {
