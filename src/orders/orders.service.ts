@@ -230,7 +230,7 @@ export class OrdersService {
         )
     })
 
-    const details = await Promise.all(
+    return await Promise.all(
       products.map(async ({ productId, quantity }) => {
         const product = productMap.get(productId)
         product.stock -= quantity
@@ -244,8 +244,6 @@ export class OrdersService {
         })
       }),
     )
-
-    return details
   }
 
   private checkOrderAccessPermission(employee: User, order: Order) {

@@ -227,8 +227,7 @@ export class UserService {
       }
     }
 
-    const user = await scrapingDNI(dni)
-    return user
+    return await scrapingDNI(dni)
   }
 
   findAll({ limit = 20, offset = 0 }: PaginationDto) {
