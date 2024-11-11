@@ -14,8 +14,8 @@ export class StoreReportsController {
   ) {
     const pdfDoc = await this.storeReportsService.getOrderByIdReport(id)
 
-    response.setHeader('Content-Type', 'application/pdf')
-    pdfDoc.pipe(response)
+    ;(response as any).setHeader('Content-Type', 'application/pdf')
+    pdfDoc.pipe(response as any)
     pdfDoc.end()
   }
 }
