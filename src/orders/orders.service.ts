@@ -8,11 +8,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, In, QueryRunner, Repository } from 'typeorm'
 
-import { ValidRoles } from 'src/auth/interfaces'
-import { User, UserService } from 'src/auth/user'
-import { PaginationDto } from 'src/common/dtos/pagination.dto'
-import { handleDBExceptions } from 'src/common/helpers'
-import { Product } from 'src/products/entities/product.entity'
+import { ValidRoles } from '../auth/interfaces'
+import { User, UserService } from '../auth/user'
+import { PaginationDto } from '../common/dtos/pagination.dto'
+import { handleDBExceptions } from '../common/helpers'
+import { Product } from '../products/entities/product.entity'
 import { CreateOrderDetailDto, CreateOrderDto, UpdateOrderDto } from './dto'
 import { Order, OrderDetail } from './entities'
 

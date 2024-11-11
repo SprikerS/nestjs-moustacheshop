@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { AuthModule } from 'src/auth/auth.module'
-import { ProductsModule } from 'src/products/products.module'
+import { AuthModule } from '../auth/auth.module'
+import { ProductsModule } from '../products/products.module'
 import { Order, OrderDetail } from './entities'
 import { OrdersController } from './orders.controller'
 import { OrdersService } from './orders.service'

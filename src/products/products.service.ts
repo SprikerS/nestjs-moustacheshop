@@ -6,8 +6,8 @@ import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { Product } from './entities/product.entity'
 
-import { PaginationDto } from 'src/common/dtos/pagination.dto'
-import { handleDBExceptions } from 'src/common/helpers'
+import { PaginationDto } from '../common/dtos/pagination.dto'
+import { handleDBExceptions } from '../common/helpers'
 
 @Injectable()
 export class ProductsService {

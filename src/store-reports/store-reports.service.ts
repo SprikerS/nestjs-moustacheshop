@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { OrdersService } from 'src/orders/orders.service'
 
-import { PrinterService } from 'src/printer/printer.service'
-import { orderByIDReport } from 'src/reports'
+import { OrdersService } from '../orders/orders.service'
+import { PrinterService } from '../printer/printer.service'
+import { orderByIDReport } from '../reports'
 
 @Injectable()
 export class StoreReportsService {

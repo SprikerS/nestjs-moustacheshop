@@ -5,7 +5,7 @@ import fetch from 'node-fetch-commonjs'
 import { CookieJar } from 'tough-cookie'
 
 import { BaseUserDto } from '../dto'
-import { capitalizeEachWord } from 'src/common/helpers'
+import { capitalizeEachWord } from '../../../common/helpers'
 
 const cookieJar = new CookieJar()
 const fetchWithCookies = FetchCookie(fetch, cookieJar)

@@ -4,8 +4,8 @@ import fs from 'node:fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { User } from 'src/auth/user'
-import { EmailSendingException } from 'src/common/helpers'
+import { User } from '../auth/user'
+import { EmailSendingException } from '../common/helpers'
 
 enum TEMPLATES {
   FORGOT_PASSWORD = './forgot-password',

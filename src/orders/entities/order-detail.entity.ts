@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { ColumnNumericTransformer } from 'src/common/helpers'
-import { Product } from 'src/products/entities/product.entity'
+import { ColumnNumericTransformer } from '../../common/helpers'
+import { Product } from '../../products/entities/product.entity'
 import { Order } from './order.entity'
 
 @Entity({ name: 'order_details' })

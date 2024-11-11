@@ -10,12 +10,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
 
 import * as bcrypt from 'bcrypt'
-import { PaginationDto } from 'src/common/dtos/pagination.dto'
-import { handleDBExceptions } from 'src/common/helpers'
-import { MailService } from 'src/mail/mail.service'
+import { PaginationDto } from '../../common/dtos/pagination.dto'
+import { handleDBExceptions } from '../../common/helpers'
+import { MailService } from '../../mail/mail.service'
 import { JwtPayload, JwtPayloadForgotPassword } from '../interfaces'
 import {
-  BaseUserDto,
   ChangePasswordDto,
   CreateUserDto,
   ForgotPasswordDto,

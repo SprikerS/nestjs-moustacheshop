@@ -10,10 +10,10 @@ import {
   Query,
 } from '@nestjs/common'
 
-import { Auth, GetUser } from 'src/auth/decorators'
-import { ValidRoles } from 'src/auth/interfaces'
-import { User } from 'src/auth/user'
-import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { Auth, GetUser } from '../auth/decorators'
+import { ValidRoles } from '../auth/interfaces'
+import { User } from '../auth/user'
+import { PaginationDto } from '../common/dtos/pagination.dto'
 import { CreateOrderDto, UpdateOrderDto } from './dto'
 import { OrdersService } from './orders.service'
 

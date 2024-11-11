@@ -4,8 +4,8 @@ import {
   TDocumentDefinitions,
 } from 'pdfmake/interfaces'
 
-import { CurrencyFormatter } from 'src/common/helpers'
-import { Order } from 'src/orders/entities/order.entity'
+import { CurrencyFormatter } from '../common/helpers'
+import { Order } from '../orders/entities'
 import { footerSection } from './sections'
 
 const logo: Content = {

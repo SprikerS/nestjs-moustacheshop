@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-import { ColumnNumericTransformer } from 'src/common/helpers'
-import { OrderDetail } from 'src/orders/entities'
+import { ColumnNumericTransformer } from '../../common/helpers'
+import { OrderDetail } from '../../orders/entities'
 
 @Entity()
 export class Product {

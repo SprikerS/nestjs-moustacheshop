@@ -12,7 +12,7 @@ import {
   Query,
 } from '@nestjs/common'
 
-import { PaginationDto } from 'src/common/dtos/pagination.dto'
+import { PaginationDto } from '../../common/dtos/pagination.dto'
 import { Auth, GetUser } from '../decorators'
 import { ValidRoles } from '../interfaces'
 import {

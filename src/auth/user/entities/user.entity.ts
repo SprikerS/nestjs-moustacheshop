@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { ValidRoles } from 'src/auth/interfaces'
-import { capitalizeEachWord } from 'src/common/helpers'
-import { Order } from 'src/orders/entities/order.entity'
+import { ValidRoles } from '../../../auth/interfaces'
+import { capitalizeEachWord } from '../../../common/helpers'
+import { Order } from '../../../orders/entities'
 import { PasswordRecovery } from './password.recovery'
 
 @Entity()
