@@ -25,6 +25,9 @@ export class OrdersService {
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
 
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
 
@@ -36,14 +39,20 @@ export class OrdersService {
   ) {}
 
   async create(employee: User, createOrderDto: CreateOrderDto) {
-    const { products = [], customerId, orderDate } = createOrderDto
+    const { products = [], dni, orderDate, ...values } = createOrderDto
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
 
     try {
-      const customer = await this.userService.findOne(customerId)
+      const userDB = await this.userRepository.findOne({ where: { dni } })
+      const customer = userDB
+        ? userDB
+        : await queryRunner.manager.save(
+            this.userRepository.create({ dni, ...values }),
+          )
+
       if (employee.id === customer.id)
         throw new BadRequestException(`You can't create an order for yourself`)
 
@@ -60,6 +69,8 @@ export class OrdersService {
       await queryRunner.manager.save(details)
       await queryRunner.commitTransaction()
 
+      details.forEach(detail => delete detail.order)
+      order.details = details
       return order
     } catch (error) {
       await queryRunner.rollbackTransaction()
