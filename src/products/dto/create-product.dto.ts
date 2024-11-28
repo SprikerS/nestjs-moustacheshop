@@ -7,6 +7,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator'
 
 export class CreateProductDto {
@@ -30,5 +31,6 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsUUID()
+  @ValidateIf(o => o.categoryId !== null)
   categoryId: string
 }

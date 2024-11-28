@@ -66,16 +66,34 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.preload({
-      id,
-      ...updateProductDto,
-    })
-
-    if (!product) throw new NotFoundException(`Product with id ${id} not found`)
+    const { categoryId } = updateProductDto
 
     try {
-      await this.productRepository.save(product)
-      return product
+      const product = await this.productRepository.preload({
+        id,
+        ...updateProductDto,
+      })
+
+      if (!product)
+        throw new NotFoundException(`Product with id ${id} not found`)
+
+      if (categoryId === null) {
+        product.category = null
+      } else if (categoryId) {
+        const category = await this.categoryRepository.findOne({
+          where: { id: categoryId },
+        })
+
+        if (!category) {
+          throw new NotFoundException(
+            `Category with ID ${categoryId} not found`,
+          )
+        }
+
+        product.category = category
+      }
+
+      return await this.productRepository.save(product)
     } catch (error) {
       handleDBExceptions(this.logger, error)
     }
