@@ -6,8 +6,9 @@ import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { Product } from './entities/product.entity'
 
-import { PaginationDto } from '../common/dtos/pagination.dto'
+import { Category } from '../categories/entities/category.entity'
 import { handleDBExceptions } from '../common/helpers'
+import { PaginationDto } from '../common/dtos/pagination.dto'
 
 @Injectable()
 export class ProductsService {
@@ -16,13 +17,33 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
+    const { categoryId } = createProductDto
+
     try {
-      const product = this.productRepository.create(createProductDto)
-      await this.productRepository.save(product)
-      return product
+      let category: Category | null = null
+      if (categoryId) {
+        category = await this.categoryRepository.findOne({
+          where: { id: categoryId },
+        })
+
+        if (!category)
+          throw new NotFoundException(
+            `Category with ID ${categoryId} not found`,
+          )
+      }
+
+      const product = this.productRepository.create({
+        ...createProductDto,
+        category,
+      })
+
+      return await this.productRepository.save(product)
     } catch (error) {
       handleDBExceptions(this.logger, error)
     }
