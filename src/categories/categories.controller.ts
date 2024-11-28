@@ -10,15 +10,18 @@ import {
   Query,
 } from '@nestjs/common'
 
+import { Auth } from '../auth/decorators'
 import { CategoriesService } from './categories.service'
 import { CreateCategoryDto, UpdateCategoryDto } from './dto'
 import { PaginationDto } from '../common/dtos/pagination.dto'
+import { ValidRoles } from '../auth/interfaces'
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @Auth(ValidRoles.EMPLOYEE)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto)
   }
@@ -34,6 +37,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.EMPLOYEE)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -42,6 +46,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.EMPLOYEE)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.remove(id)
   }
