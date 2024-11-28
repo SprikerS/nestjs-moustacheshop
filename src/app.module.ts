@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { AuthModule } from './auth/auth.module'
+import { CategoriesModule } from './categories/categories.module'
 import { CommonModule } from './common/common.module'
 import { MailModule } from './mail/mail.module'
 import { OrdersModule } from './orders/orders.module'
@@ -26,6 +27,7 @@ import { StoreReportsModule } from './store-reports/store-reports.module'
       synchronize: true,
     }),
     AuthModule,
+    CategoriesModule,
     CommonModule,
     MailModule,
     OrdersModule,

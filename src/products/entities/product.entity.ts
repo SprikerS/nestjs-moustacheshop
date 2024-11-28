@@ -1,5 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 
+import { Category } from '../../categories/entities/category.entity'
 import { ColumnNumericTransformer } from '../../common/helpers'
 import { OrderDetail } from '../../orders/entities'
 
@@ -20,6 +28,17 @@ export class Product {
 
   @Column('int')
   stock: number
+
+  @Column('text', { nullable: true })
+  description: string
+
+  @ManyToOne(() => Category, category => category.products, {
+    eager: true,
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category
 
   @OneToMany(() => OrderDetail, detail => detail.product)
   details?: OrderDetail[]
