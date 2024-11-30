@@ -35,7 +35,7 @@ export class Product {
   @Column('boolean', { default: true })
   activo: boolean
 
-  @ManyToOne(() => Category, category => category.products, {
+  @ManyToOne(() => Category, category => category.productos, {
     eager: true,
     nullable: true,
     onDelete: 'SET NULL',

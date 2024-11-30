@@ -28,7 +28,7 @@ export class CategoriesService {
   async findAll(paginationDto: PaginationDto) {
     const { limit = 20, offset = 0 } = paginationDto
     return await this.categoryRepository.find({
-      order: { name: 'ASC' },
+      order: { nombre: 'ASC' },
       take: limit,
       skip: offset,
     })

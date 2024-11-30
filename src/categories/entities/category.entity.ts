@@ -8,10 +8,10 @@ export class Category {
   id: string
 
   @Column('text', { unique: true })
-  name: string
+  nombre: string
 
   @OneToMany(() => Product, product => product.categoria, {
     cascade: false,
   })
-  products?: Product[]
+  productos?: Product[]
 }
