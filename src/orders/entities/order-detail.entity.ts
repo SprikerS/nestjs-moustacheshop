@@ -34,7 +34,7 @@ export class OrderDetail {
   })
   total: number
 
-  @ManyToOne(() => Product, product => product.details)
+  @ManyToOne(() => Product, product => product.detalles)
   product: Product
 
   @ManyToOne(() => Order, order => order.details, { onDelete: 'CASCADE' })

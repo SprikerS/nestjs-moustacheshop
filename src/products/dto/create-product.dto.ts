@@ -14,11 +14,11 @@ import {
 export class CreateProductDto {
   @IsString()
   @MinLength(1)
-  name: string
+  nombre: string
 
   @IsNumber()
   @IsPositive()
-  price: number
+  precio: number
 
   @IsInt()
   @IsPositive()
@@ -27,14 +27,14 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  description: string
+  descripcion: string
 
   @IsOptional()
   @IsUUID()
-  @ValidateIf(o => o.categoryId !== null)
-  categoryId: string
+  @ValidateIf(o => o.categoriaId !== null)
+  categoriaId: string
 
   @IsOptional()
   @IsBoolean()
-  active: boolean
+  activo: boolean
 }

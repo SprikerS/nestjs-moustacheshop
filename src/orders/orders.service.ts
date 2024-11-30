@@ -173,7 +173,7 @@ export class OrdersService {
               product.stock += quantity - newQuantity
               if (product.stock < 0)
                 throw new BadRequestException(
-                  `Product ${product.name} does not have enough stock`,
+                  `Product ${product.nombre} does not have enough stock`,
                 )
               await queryRunner.manager.save(product)
               details[index].quantity = newQuantity
@@ -234,10 +234,10 @@ export class OrdersService {
     const productMap = new Map(pEnts.map(product => [product.id, product]))
 
     products.forEach(({ productId, quantity }) => {
-      const { name, stock } = productMap.get(productId)
+      const { nombre, stock } = productMap.get(productId)
       if (stock < quantity)
         throw new BadRequestException(
-          `Product ${name} has only ${stock} units in stock`,
+          `Product ${nombre} has only ${stock} units in stock`,
         )
     })
 
@@ -249,7 +249,7 @@ export class OrdersService {
 
         return this.detailRepository.create({
           quantity,
-          salePrice: product.price,
+          salePrice: product.precio,
           product,
           order,
         })

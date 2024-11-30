@@ -10,7 +10,7 @@ export class Category {
   @Column('text', { unique: true })
   name: string
 
-  @OneToMany(() => Product, product => product.category, {
+  @OneToMany(() => Product, product => product.categoria, {
     cascade: false,
   })
   products?: Product[]

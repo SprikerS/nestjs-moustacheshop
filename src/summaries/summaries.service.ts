@@ -38,8 +38,8 @@ export class SummariesService {
     const products = await this.productRepository.find({})
 
     const productsTotal = products.length
-    const produtcsActive = products.filter(product => product.active).length
-    const produtcsInactive = products.filter(product => !product.active).length
+    const produtcsActive = products.filter(product => product.activo).length
+    const produtcsInactive = products.filter(product => !product.activo).length
 
     return {
       productsTotal,

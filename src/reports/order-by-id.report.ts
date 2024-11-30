@@ -132,7 +132,7 @@ export const orderByIDReport = ({
             ...details.map((order, index) => [
               { text: index + 1, alignment: 'center' },
               {
-                text: order.product.name,
+                text: order.product.nombre,
                 margin: [10, 0],
               },
               {
