@@ -264,9 +264,24 @@ export class UserService {
   }
 
   async remove(id: string) {
-    const user = await this.findOne(id)
-    // user.isActive = false
-    // await this.userRepository.save(person)
-    await this.userRepository.remove(user)
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        sales: true,
+        purchases: true,
+      },
+    })
+    if (!user) throw new NotFoundException(`Product with id ${id} not found`)
+
+    const hasRelations =
+      (user.sales && user.sales.length > 0) ||
+      (user.purchases && user.purchases.length > 0)
+
+    if (hasRelations) {
+      user.active = false
+      await this.userRepository.save(user)
+    } else {
+      await this.userRepository.remove(user)
+    }
   }
 }
