@@ -108,10 +108,10 @@ export class UserService {
       })
 
       if (!recovery) {
-        recovery = this.pwdRecRepository.create({ code, jwt, user, expiresAt })
+        recovery = this.pwdRecRepository.create({ codigo: code, jwt, user, expiresAt })
       } else {
         recovery.jwt = jwt
-        recovery.code = code
+        recovery.codigo = code
         recovery.expiresAt = expiresAt
       }
 

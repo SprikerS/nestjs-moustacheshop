@@ -15,21 +15,21 @@ export class PasswordRecovery {
   id: string
 
   @Column('text')
-  code: string
+  codigo: string
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
+  @CreateDateColumn({ name: 'creado_en', type: 'timestamp with time zone' })
   createdAt: Date
 
-  @Column('timestamp with time zone', { name: 'expires_at' })
+  @Column('timestamp with time zone', { name: 'expira_en' })
   expiresAt: Date
 
   @Column('bool', { default: false })
-  used: boolean
+  usado: boolean
 
   @Column('text')
   jwt: string
 
   @OneToOne(() => User, user => user.pwdRec)
-  @JoinColumn()
+  @JoinColumn({ name : 'usuario_id' })
   user: User
 }
