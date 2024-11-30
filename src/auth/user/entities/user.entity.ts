@@ -13,7 +13,7 @@ import { capitalizeEachWord } from '../../../common/helpers'
 import { Order } from '../../../orders/entities'
 import { PasswordRecovery } from './password.recovery'
 
-@Entity()
+@Entity({ name: 'usuario' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string

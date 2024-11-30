@@ -11,7 +11,7 @@ import { ColumnNumericTransformer } from '../../common/helpers'
 import { Product } from '../../products/entities/product.entity'
 import { Order } from './order.entity'
 
-@Entity({ name: 'order_details' })
+@Entity({ name: 'orden_detalles' })
 export class OrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string

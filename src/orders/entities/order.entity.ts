@@ -9,7 +9,7 @@ import {
 import { User } from '../../auth/user/entities'
 import { OrderDetail } from './order-detail.entity'
 
-@Entity()
+@Entity({ name: 'orden' })
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string

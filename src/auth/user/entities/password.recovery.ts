@@ -9,7 +9,7 @@ import {
 
 import { User } from './user.entity'
 
-@Entity()
+@Entity({ name: 'recuperar_clave' })
 export class PasswordRecovery {
   @PrimaryGeneratedColumn('uuid')
   id: string
