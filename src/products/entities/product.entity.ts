@@ -32,6 +32,9 @@ export class Product {
   @Column('text', { nullable: true })
   description: string
 
+  @Column('boolean', { default: true })
+  active: boolean
+
   @ManyToOne(() => Category, category => category.products, {
     eager: true,
     nullable: true,

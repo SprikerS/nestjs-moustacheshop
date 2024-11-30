@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsInt,
   IsNumber,
   IsOptional,
@@ -32,4 +33,8 @@ export class CreateProductDto {
   @IsUUID()
   @ValidateIf(o => o.categoryId !== null)
   categoryId: string
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean
 }

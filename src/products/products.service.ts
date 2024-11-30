@@ -73,8 +73,18 @@ export class ProductsService {
   }
 
   async remove(id: string) {
-    const product = await this.findOne(id)
-    await this.productRepository.remove(product)
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations: { details: true },
+    })
+    if (!product) throw new NotFoundException(`Product with id ${id} not found`)
+
+    if (!product.details || product.details.length === 0) {
+      await this.productRepository.remove(product)
+    } else {
+      product.active = false
+      await this.productRepository.save(product)
+    }
   }
 
   private async resolveCategory(
