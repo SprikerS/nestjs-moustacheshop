@@ -3,15 +3,15 @@ import { IsString, Length, MinLength } from 'class-validator'
 export class BaseUserDto {
   @IsString()
   @MinLength(1)
-  names: string
+  nombres: string
 
   @IsString()
   @MinLength(1)
-  paternalSurname: string
+  apellidoPaterno: string
 
   @IsString()
   @MinLength(1)
-  maternalSurname: string
+  apellidoMaterno: string
 
   @IsString()
   @Length(8, 8, { message: 'the dni must have 8 digits' })

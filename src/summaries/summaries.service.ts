@@ -52,8 +52,8 @@ export class SummariesService {
     const users = await this.userRepository.find({})
 
     const usersTotal = users.length
-    const usersActive = users.filter(user => user.active).length
-    const usersInactive = users.filter(user => !user.active).length
+    const usersActive = users.filter(user => user.activo).length
+    const usersInactive = users.filter(user => !user.activo).length
 
     const roleCounts = users.reduce(
       (counts, user) => {
@@ -93,7 +93,7 @@ export class SummariesService {
       {}
     orders.forEach(order => {
       if (order.employee) {
-        const fullName = `${order.employee.names} ${order.employee.paternalSurname} ${order.employee.maternalSurname}`
+        const fullName = `${order.employee.nombres} ${order.employee.apellidoPaterno} ${order.employee.apellidoMaterno}`
         if (!employeeOrderCount[order.employee.id]) {
           employeeOrderCount[order.employee.id] = { count: 0, name: fullName }
         }
@@ -110,7 +110,7 @@ export class SummariesService {
       {}
     orders.forEach(order => {
       if (order.customer) {
-        const fullName = `${order.customer.names} ${order.customer.paternalSurname} ${order.customer.maternalSurname}`
+        const fullName = `${order.customer.nombres} ${order.customer.apellidoPaterno} ${order.customer.apellidoMaterno}`
         if (!customerOrderCount[order.customer.id]) {
           customerOrderCount[order.customer.id] = { count: 0, name: fullName }
         }

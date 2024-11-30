@@ -6,7 +6,7 @@ export class ResetPasswordDto {
   @MaxLength(50)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
-      'the password must have a Uppercase, lowercase letter and a number',
+      'La contraseña debe tener una letra mayúscula, una minúscula y un número',
   })
-  password: string
+  clave: string
 }

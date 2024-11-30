@@ -20,9 +20,9 @@ export class Order {
   @OneToMany(() => OrderDetail, detail => detail.order)
   details?: OrderDetail[]
 
-  @ManyToOne(() => User, user => user.sales)
+  @ManyToOne(() => User, user => user.ventas)
   employee: User
 
-  @ManyToOne(() => User, user => user.purchases)
+  @ManyToOne(() => User, user => user.compras)
   customer: User
 }

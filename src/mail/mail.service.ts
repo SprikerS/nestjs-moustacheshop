@@ -37,7 +37,7 @@ export class MailService {
   }
 
   private async sendEmail(
-    { email, names }: User,
+    { email, nombres }: User,
     subject: string,
     template: TEMPLATES,
     context: Record<string, any> = {},
@@ -51,7 +51,7 @@ export class MailService {
         subject,
         template,
         context: {
-          names,
+          nombres,
           email,
           ...context,
         },

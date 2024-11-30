@@ -15,7 +15,7 @@ import {
   MinLength,
 } from 'class-validator'
 
-import { ValidRoles } from '../../../auth/interfaces'
+import { ValidRoles } from '../../interfaces'
 import { BaseUserDto } from './base-user.dto'
 
 export class CreateUserDto extends BaseUserDto {
@@ -30,14 +30,14 @@ export class CreateUserDto extends BaseUserDto {
     message:
       'the password must have a Uppercase, lowercase letter and a number',
   })
-  password: string
+  clave: string
 
   @IsOptional()
   @IsInt()
   @IsPositive()
   @Min(900000000, { message: 'the phone number must have 9 digits' })
   @Max(999999999, { message: 'the phone number must have 9 digits' })
-  phoneNumber: number
+  telefono: number
 
   @IsOptional()
   @IsArray()
@@ -47,5 +47,5 @@ export class CreateUserDto extends BaseUserDto {
 
   @IsOptional()
   @IsBoolean()
-  active: boolean
+  activo: boolean
 }

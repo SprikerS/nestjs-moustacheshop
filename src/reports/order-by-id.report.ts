@@ -109,7 +109,7 @@ export const orderByIDReport = ({
             text: 'Vendido a:\n',
             style: 'h3',
           },
-          `${customer.names} ${customer.paternalSurname} ${customer.maternalSurname} \nDNI: ${customer.dni}`,
+          `${customer.nombres} ${customer.apellidoPaterno} ${customer.apellidoMaterno} \nDNI: ${customer.dni}`,
         ],
       },
 

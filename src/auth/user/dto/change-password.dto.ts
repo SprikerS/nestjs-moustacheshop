@@ -16,16 +16,16 @@ export class ChangePasswordDto {
   @MaxLength(50)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
-      'the old password must have a Uppercase, lowercase letter and a number',
+      'La contraseña anterior debe tener una letra mayúscula, una minúscula y un número',
   })
-  oldPassword: string
+  claveAnterior: string
 
   @IsString()
   @MinLength(6)
   @MaxLength(50)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
-      'the new password must have a Uppercase, lowercase letter and a number',
+      'La nueva contraseña debe tener una letra mayúscula, una minúscula y un número',
   })
-  newPassword: string
+  claveNueva: string
 }

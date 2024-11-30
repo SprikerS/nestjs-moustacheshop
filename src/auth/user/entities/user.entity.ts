@@ -19,13 +19,13 @@ export class User {
   id: string
 
   @Column('text')
-  names: string
+  nombres: string
 
-  @Column('text', { name: 'paternal_surname' })
-  paternalSurname: string
+  @Column('text', { name: 'apellido_paterno' })
+  apellidoPaterno: string
 
-  @Column('text', { name: 'maternal_surname' })
-  maternalSurname: string
+  @Column('text', { name: 'apellido_materno' })
+  apellidoMaterno: string
 
   @Column('text', { unique: true })
   dni: string
@@ -34,22 +34,22 @@ export class User {
   email?: string
 
   @Column('text', { select: false, nullable: true })
-  password?: string
+  clave?: string
 
-  @Column('int', { unique: true, name: 'phone_number', nullable: true })
-  phoneNumber?: number
+  @Column('int', { unique: true, name: 'telefono', nullable: true })
+  telefono?: number
 
   @Column('bool', { default: true })
-  active: boolean
+  activo: boolean
 
   @Column('text', { array: true, default: [ValidRoles.CUSTOMER] })
   roles: string[]
 
   @OneToMany(() => Order, order => order.employee)
-  sales?: Order[]
+  ventas?: Order[]
 
   @OneToMany(() => Order, order => order.customer)
-  purchases?: Order[]
+  compras?: Order[]
 
   @OneToOne(() => PasswordRecovery, pass => pass.user, { onDelete: 'CASCADE' })
   pwdRec?: PasswordRecovery
@@ -58,8 +58,8 @@ export class User {
   @BeforeUpdate()
   checkFields() {
     this.email = this.email?.toLowerCase().trim()
-    this.names = capitalizeEachWord(this.names)
-    this.paternalSurname = capitalizeEachWord(this.paternalSurname)
-    this.maternalSurname = capitalizeEachWord(this.maternalSurname)
+    this.nombres = capitalizeEachWord(this.nombres)
+    this.apellidoPaterno = capitalizeEachWord(this.apellidoPaterno)
+    this.apellidoMaterno = capitalizeEachWord(this.apellidoMaterno)
   }
 }

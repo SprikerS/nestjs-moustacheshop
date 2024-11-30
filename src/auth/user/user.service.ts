@@ -53,7 +53,7 @@ export class UserService {
   private async findUserByEmail(email: string, id: string | null = null) {
     const queryBuilder = this.userRepository.createQueryBuilder('qbUser')
     const user = await queryBuilder
-      .addSelect('qbUser.password')
+      .addSelect('qbUser.clave')
       .where('qbUser.email =:email', { email })
       .getOne()
 
@@ -68,17 +68,17 @@ export class UserService {
 
   async changePassword(
     { id }: User,
-    { email, oldPassword, newPassword }: ChangePasswordDto,
+    { email, claveAnterior, claveNueva }: ChangePasswordDto,
   ) {
     try {
       const user = await this.findUserByEmail(email, id)
-      if (!bcrypt.compareSync(oldPassword, user.password))
+      if (!bcrypt.compareSync(claveAnterior, user.clave))
         throw new UnauthorizedException('Invalid old password')
 
-      user.password = await bcrypt.hash(newPassword, 10)
+      user.clave = await bcrypt.hash(claveNueva, 10)
       await this.userRepository.save(user)
       await this.mailService.notifyPasswordChange(user)
-      delete user.password
+      delete user.clave
 
       return {
         status: 'success',
@@ -134,7 +134,7 @@ export class UserService {
 
   async resetPassword(
     { token, code }: ResetPwdQuery,
-    { password }: ResetPasswordDto,
+    { clave }: ResetPasswordDto,
   ) {
     if (!code && !token)
       throw new UnauthorizedException('Invalid token or code')
@@ -156,12 +156,12 @@ export class UserService {
       if (token) this.jwtService.verify(token)
 
       const { user } = pwdRec
-      user.password = await bcrypt.hash(password, 10)
+      user.clave = await bcrypt.hash(clave, 10)
 
       await this.userRepository.save(user)
       await this.pwdRecRepository.remove(pwdRec)
       await this.mailService.notifyPasswordChange(user)
-      delete user.password
+      delete user.clave
 
       return {
         status: 'success',
@@ -175,14 +175,14 @@ export class UserService {
 
   async create(registerDto: CreateUserDto) {
     try {
-      const { password, ...data } = registerDto
+      const { clave, ...data } = registerDto
       const user = this.userRepository.create({
-        password: await bcrypt.hash(password, 10),
+        clave: await bcrypt.hash(clave, 10),
         ...data,
       })
 
       await this.userRepository.save(user)
-      delete user.password
+      delete user.clave
 
       return {
         ...user,
@@ -193,13 +193,13 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginUserDto) {
+  async login({ email, clave }: LoginUserDto) {
     const user = await this.findUserByEmail(email)
 
-    if (!bcrypt.compareSync(password, user.password))
+    if (!bcrypt.compareSync(clave, user.clave))
       throw new UnauthorizedException('Invalid credentials')
 
-    delete user.password
+    delete user.clave
 
     return {
       ...user,
@@ -217,13 +217,13 @@ export class UserService {
   async srapingReniec(dni: string) {
     const userDB = await this.userRepository.findOneBy({ dni })
     if (userDB) {
-      const { dni, names, paternalSurname, maternalSurname } = userDB
+      const { dni, nombres, apellidoPaterno, apellidoMaterno } = userDB
 
       return {
         dni,
-        names,
-        paternalSurname,
-        maternalSurname,
+        nombres,
+        apellidoPaterno: apellidoPaterno,
+        apellidoMaterno: apellidoMaterno,
       }
     }
 
@@ -241,7 +241,7 @@ export class UserService {
   async findOne(id: string) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: { sales: true, purchases: true },
+      relations: { ventas: true, compras: true },
     })
     if (!user) throw new NotFoundException(`User with ID ${id} not found`)
     return user
@@ -267,18 +267,18 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: {
-        sales: true,
-        purchases: true,
+        ventas: true,
+        compras: true,
       },
     })
     if (!user) throw new NotFoundException(`Product with id ${id} not found`)
 
     const hasRelations =
-      (user.sales && user.sales.length > 0) ||
-      (user.purchases && user.purchases.length > 0)
+      (user.ventas && user.ventas.length > 0) ||
+      (user.compras && user.compras.length > 0)
 
     if (hasRelations) {
-      user.active = false
+      user.activo = false
       await this.userRepository.save(user)
     } else {
       await this.userRepository.remove(user)
