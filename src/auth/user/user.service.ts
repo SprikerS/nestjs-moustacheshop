@@ -234,7 +234,7 @@ export class UserService {
     return this.userRepository.find({
       take: limit,
       skip: offset,
-      where: { active: true },
+      // where: { active: true },
     })
   }
 

@@ -1,6 +1,7 @@
 import {
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsInt,
@@ -43,4 +44,8 @@ export class CreateUserDto extends BaseUserDto {
   @ArrayNotEmpty()
   @IsEnum(ValidRoles, { each: true, message: 'each role must be a valid role' })
   roles: ValidRoles[]
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean
 }

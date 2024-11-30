@@ -16,7 +16,6 @@ import { PaginationDto } from '../../common/dtos/pagination.dto'
 import { Auth, GetUser } from '../decorators'
 import { ValidRoles } from '../interfaces'
 import {
-  BaseUserDto,
   ChangePasswordDto,
   CreateUserDto,
   ForgotPasswordDto,
