@@ -17,15 +17,15 @@ export class OrderDetail {
   id: string
 
   @Column('int')
-  quantity: number
+  cantidad: number
 
   @Column('decimal', {
-    name: 'sale_price',
+    name: 'precio_venta',
     precision: 5,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
-  salePrice: number
+  precioVenta: number
 
   @Column('decimal', {
     precision: 5,
@@ -35,14 +35,14 @@ export class OrderDetail {
   total: number
 
   @ManyToOne(() => Product, product => product.detalles)
-  product: Product
+  producto: Product
 
-  @ManyToOne(() => Order, order => order.details, { onDelete: 'CASCADE' })
-  order: Order
+  @ManyToOne(() => Order, order => order.detalles, { onDelete: 'CASCADE' })
+  orden: Order
 
   @BeforeInsert()
   @BeforeUpdate()
   calculateTotal() {
-    this.total = parseFloat((this.quantity * this.salePrice).toFixed(2))
+    this.total = parseFloat((this.cantidad * this.precioVenta).toFixed(2))
   }
 }

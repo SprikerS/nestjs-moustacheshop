@@ -14,15 +14,15 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column('date', { name: 'order_date' })
-  orderDate: Date
+  @Column('date')
+  fecha: Date
 
-  @OneToMany(() => OrderDetail, detail => detail.order)
-  details?: OrderDetail[]
+  @OneToMany(() => OrderDetail, detail => detail.orden)
+  detalles?: OrderDetail[]
 
   @ManyToOne(() => User, user => user.ventas)
-  employee: User
+  empleado: User
 
   @ManyToOne(() => User, user => user.compras)
-  customer: User
+  cliente: User
 }

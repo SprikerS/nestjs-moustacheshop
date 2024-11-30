@@ -16,7 +16,7 @@ export class StoreReportsService {
 
     const docDefinition = orderByIDReport(order)
     const doc = this.printerService.createPdf(docDefinition)
-    doc.info.Title = `${order.customer.dni} - BILL #${id.split('-')[0].toUpperCase()}`
+    doc.info.Title = `${order.cliente.dni} - BILL #${id.split('-')[0].toUpperCase()}`
     return doc
   }
 }

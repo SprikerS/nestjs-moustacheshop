@@ -45,10 +45,10 @@ export class User {
   @Column('text', { array: true, default: [ValidRoles.CUSTOMER] })
   roles: string[]
 
-  @OneToMany(() => Order, order => order.employee)
+  @OneToMany(() => Order, order => order.empleado)
   ventas?: Order[]
 
-  @OneToMany(() => Order, order => order.customer)
+  @OneToMany(() => Order, order => order.cliente)
   compras?: Order[]
 
   @OneToOne(() => PasswordRecovery, pass => pass.user, { onDelete: 'CASCADE' })

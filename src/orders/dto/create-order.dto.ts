@@ -5,12 +5,12 @@ import { CreateOrderDetailDto } from './create-order-detail.dto'
 
 export class CreateOrderDto extends BaseUserDto {
   @IsDateString()
-  orderDate: Date
+  fecha: Date
 
   @IsOptional()
   @IsUUID()
-  customerId: string
+  clienteId: string
 
   @IsArray()
-  products: CreateOrderDetailDto[]
+  productos: CreateOrderDetailDto[]
 }

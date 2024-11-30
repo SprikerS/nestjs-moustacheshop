@@ -31,12 +31,12 @@ const styles: StyleDictionary = {
 
 export const orderByIDReport = ({
   id,
-  orderDate,
-  customer,
-  details,
+  fecha,
+  cliente,
+  detalles,
 }: Order): TDocumentDefinitions => {
-  const subTotal = details
-    .reduce((acc, detail) => acc + detail.salePrice * detail.quantity, 0)
+  const subTotal = detalles
+    .reduce((acc, detail) => acc + detail.precioVenta * detail.cantidad, 0)
     .toFixed(2)
 
   const total = CurrencyFormatter.formatCurrency(parseFloat(subTotal) * 1.18)
@@ -86,7 +86,7 @@ export const orderByIDReport = ({
                 text: `BILL #${id.split('-')[0].toUpperCase()} \n`,
                 style: 'h3',
               },
-              `${orderDate}\n`,
+              `${fecha}\n`,
             ],
             alignment: 'right',
           },
@@ -109,7 +109,7 @@ export const orderByIDReport = ({
             text: 'Vendido a:\n',
             style: 'h3',
           },
-          `${customer.nombres} ${customer.apellidoPaterno} ${customer.apellidoMaterno} \nDNI: ${customer.dni}`,
+          `${cliente.nombres} ${cliente.apellidoPaterno} ${cliente.apellidoMaterno} \nDNI: ${cliente.dni}`,
         ],
       },
 
@@ -129,18 +129,18 @@ export const orderByIDReport = ({
               { text: 'PRECIO', margin: [20, 0], alignment: 'center' },
               { text: 'TOTAL', alignment: 'center' },
             ],
-            ...details.map((order, index) => [
+            ...detalles.map((order, index) => [
               { text: index + 1, alignment: 'center' },
               {
-                text: order.product.nombre,
+                text: order.producto.nombre,
                 margin: [10, 0],
               },
               {
-                text: order.quantity.toString(),
+                text: order.cantidad.toString(),
                 alignment: 'center',
               },
               {
-                text: order.salePrice.toString(),
+                text: order.precioVenta.toString(),
                 alignment: 'center',
               },
               {

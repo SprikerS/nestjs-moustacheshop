@@ -78,10 +78,10 @@ export class SummariesService {
   async getOrders() {
     const orders = await this.orderRepository.find({
       relations: {
-        customer: true,
-        employee: true,
-        details: {
-          product: true,
+        cliente: true,
+        empleado: true,
+        detalles: {
+          producto: true,
         },
       },
     })
@@ -92,12 +92,12 @@ export class SummariesService {
     const employeeOrderCount: Record<string, { count: number; name: string }> =
       {}
     orders.forEach(order => {
-      if (order.employee) {
-        const fullName = `${order.employee.nombres} ${order.employee.apellidoPaterno} ${order.employee.apellidoMaterno}`
-        if (!employeeOrderCount[order.employee.id]) {
-          employeeOrderCount[order.employee.id] = { count: 0, name: fullName }
+      if (order.empleado) {
+        const fullName = `${order.empleado.nombres} ${order.empleado.apellidoPaterno} ${order.empleado.apellidoMaterno}`
+        if (!employeeOrderCount[order.empleado.id]) {
+          employeeOrderCount[order.empleado.id] = { count: 0, name: fullName }
         }
-        employeeOrderCount[order.employee.id].count++
+        employeeOrderCount[order.empleado.id].count++
       }
     })
     const topEmployee = Object.values(employeeOrderCount).reduce(
@@ -109,12 +109,12 @@ export class SummariesService {
     const customerOrderCount: Record<string, { count: number; name: string }> =
       {}
     orders.forEach(order => {
-      if (order.customer) {
-        const fullName = `${order.customer.nombres} ${order.customer.apellidoPaterno} ${order.customer.apellidoMaterno}`
-        if (!customerOrderCount[order.customer.id]) {
-          customerOrderCount[order.customer.id] = { count: 0, name: fullName }
+      if (order.cliente) {
+        const fullName = `${order.cliente.nombres} ${order.cliente.apellidoPaterno} ${order.cliente.apellidoMaterno}`
+        if (!customerOrderCount[order.cliente.id]) {
+          customerOrderCount[order.cliente.id] = { count: 0, name: fullName }
         }
-        customerOrderCount[order.customer.id].count++
+        customerOrderCount[order.cliente.id].count++
       }
     })
     const topCustomer = Object.values(customerOrderCount).reduce(
