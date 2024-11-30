@@ -1,9 +1,9 @@
 import {
   Column,
-  Entity,
+  Entity, JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm'
 
 import { User } from '../../auth/user/entities'
@@ -21,8 +21,10 @@ export class Order {
   detalles?: OrderDetail[]
 
   @ManyToOne(() => User, user => user.ventas)
+  @JoinColumn({ name: 'empleado_id' })
   empleado: User
 
   @ManyToOne(() => User, user => user.compras)
+  @JoinColumn({ name: 'cliente_id' })
   cliente: User
 }

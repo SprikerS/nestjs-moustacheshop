@@ -2,9 +2,9 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
-  Entity,
+  Entity, JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm'
 
 import { ColumnNumericTransformer } from '../../common/helpers'
@@ -35,9 +35,11 @@ export class OrderDetail {
   total: number
 
   @ManyToOne(() => Product, product => product.detalles)
+  @JoinColumn({ name: 'producto_id' })
   producto: Product
 
   @ManyToOne(() => Order, order => order.detalles, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'orden_id' })
   orden: Order
 
   @BeforeInsert()
