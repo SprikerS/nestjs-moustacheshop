@@ -1,10 +1,10 @@
 {
   "name": "nestjs-moustacheshop",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Backend for the Moustache Shop built with NestJS",
+  "author": "SprikerS",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
