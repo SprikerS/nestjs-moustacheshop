@@ -10,7 +10,9 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common'
+import { Response } from 'express'
 
 import { PaginationDto } from '../../common/dtos/pagination.dto'
 import { Auth, GetUser } from '../decorators'
@@ -57,8 +59,8 @@ export class UserController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  loginUser(@Body() loginUserDto: LoginUserDto) {
-    return this.userService.login(loginUserDto)
+  loginUser(@Body() loginUserDto: LoginUserDto, @Res({ passthrough: true }) response: Response) {
+    return this.userService.login(loginUserDto, response)
   }
 
   @Get('check-auth-status')

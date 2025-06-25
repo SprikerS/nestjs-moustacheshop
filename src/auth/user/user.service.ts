@@ -2,8 +2,11 @@ import { ForbiddenException, Injectable, Logger, NotFoundException, Unauthorized
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
+import { Response } from 'express'
 
+import ms from 'ms'
 import * as bcrypt from 'bcrypt'
+
 import { PaginationDto } from '../../common/dtos/pagination.dto'
 import { handleDBExceptions } from '../../common/helpers'
 import { MailService } from '../../mail/mail.service'
@@ -173,15 +176,25 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginUserDto) {
+  async login({ email, password }: LoginUserDto, response: Response) {
     const user = await this.findUserByEmail(email)
 
     if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException('Invalid credentials')
     delete user.password
 
+    const token = this.getJwtToken({ id: user.id })
+    const expires = new Date()
+    expires.setMilliseconds(expires.getMilliseconds() + ms(process.env.JWT_EXPIRATION as ms.StringValue))
+
+    response.cookie('access_token', token, {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      expires,
+    })
+
     return {
       ...user,
-      token: this.getJwtToken({ id: user.id }),
+      token,
     }
   }
 

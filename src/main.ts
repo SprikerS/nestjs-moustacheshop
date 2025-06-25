@@ -1,12 +1,15 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
-
 import 'reflect-metadata'
+
+import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
+import cookieParser from 'cookie-parser'
+
+import { AppModule } from './app.module'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  app.use(cookieParser())
   app.setGlobalPrefix('api')
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,4 +20,5 @@ async function bootstrap() {
 
   await app.listen(3000)
 }
+
 bootstrap()
