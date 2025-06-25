@@ -18,5 +18,5 @@ export class LoginUserDto {
     message:
       'La contraseña debe tener una letra mayúscula, una minúscula y un número',
   })
-  clave: string
+  password: string
 }

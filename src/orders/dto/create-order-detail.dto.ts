@@ -3,11 +3,11 @@ import { IsNumber, IsPositive, IsUUID } from 'class-validator'
 export class CreateOrderDetailDto {
   @IsNumber()
   @IsPositive()
-  cantidad: number
+  quantity: number
 
   @IsUUID()
-  productoId: string
+  productId: string
 
   @IsUUID()
-  ordenId: string
+  orderId: string
 }

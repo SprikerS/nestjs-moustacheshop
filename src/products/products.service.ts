@@ -21,14 +21,14 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const { categoriaId } = createProductDto
+    const { categoryId } = createProductDto
 
     try {
-      const categoria = await this.resolveCategory(categoriaId)
+      const category = await this.resolveCategory(categoryId)
 
       const product = this.productRepository.create({
         ...createProductDto,
-        categoria,
+        category,
       })
 
       return await this.productRepository.save(product)
@@ -40,7 +40,7 @@ export class ProductsService {
   findAll(paginationDto: PaginationDto) {
     const { limit = 20, offset = 0 } = paginationDto
     return this.productRepository.find({
-      order: { nombre: 'ASC' },
+      order: { name: 'ASC' },
       take: limit,
       skip: offset,
     })
@@ -53,7 +53,7 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const { categoriaId } = updateProductDto
+    const { categoryId } = updateProductDto
 
     try {
       const product = await this.productRepository.preload({
@@ -64,7 +64,7 @@ export class ProductsService {
       if (!product)
         throw new NotFoundException(`Product with id ${id} not found`)
 
-      product.categoria = await this.resolveCategory(categoriaId)
+      product.category = await this.resolveCategory(categoryId)
 
       return await this.productRepository.save(product)
     } catch (error) {
@@ -75,14 +75,14 @@ export class ProductsService {
   async remove(id: string) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: { detalles: true },
+      relations: { details: true },
     })
     if (!product) throw new NotFoundException(`Product with id ${id} not found`)
 
-    if (!product.detalles || product.detalles.length === 0) {
+    if (!product.details || product.details.length === 0) {
       await this.productRepository.remove(product)
     } else {
-      product.activo = false
+      product.active = false
       await this.productRepository.save(product)
     }
   }

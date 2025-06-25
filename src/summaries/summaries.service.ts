@@ -38,8 +38,8 @@ export class SummariesService {
     const products = await this.productRepository.find({})
 
     const productsTotal = products.length
-    const produtcsActive = products.filter(product => product.activo).length
-    const produtcsInactive = products.filter(product => !product.activo).length
+    const produtcsActive = products.filter(product => product.active).length
+    const produtcsInactive = products.filter(product => !product.active).length
 
     return {
       productsTotal,
@@ -52,8 +52,8 @@ export class SummariesService {
     const users = await this.userRepository.find({})
 
     const usersTotal = users.length
-    const usersActive = users.filter(user => user.activo).length
-    const usersInactive = users.filter(user => !user.activo).length
+    const usersActive = users.filter(user => user.active).length
+    const usersInactive = users.filter(user => !user.active).length
 
     const roleCounts = users.reduce(
       (counts, user) => {
@@ -78,10 +78,10 @@ export class SummariesService {
   async getOrders() {
     const orders = await this.orderRepository.find({
       relations: {
-        cliente: true,
-        empleado: true,
-        detalles: {
-          producto: true,
+        customer: true,
+        employee: true,
+        details: {
+          product: true,
         },
       },
     })
@@ -92,12 +92,12 @@ export class SummariesService {
     const employeeOrderCount: Record<string, { count: number; name: string }> =
       {}
     orders.forEach(order => {
-      if (order.empleado) {
-        const fullName = `${order.empleado.nombres} ${order.empleado.apellidoPaterno} ${order.empleado.apellidoMaterno}`
-        if (!employeeOrderCount[order.empleado.id]) {
-          employeeOrderCount[order.empleado.id] = { count: 0, name: fullName }
+      if (order.employee) {
+        const fullName = `${order.employee.names} ${order.employee.paternalSurname} ${order.employee.maternalSurname}`
+        if (!employeeOrderCount[order.employee.id]) {
+          employeeOrderCount[order.employee.id] = { count: 0, name: fullName }
         }
-        employeeOrderCount[order.empleado.id].count++
+        employeeOrderCount[order.employee.id].count++
       }
     })
     const topEmployee = Object.values(employeeOrderCount).reduce(
@@ -109,12 +109,12 @@ export class SummariesService {
     const customerOrderCount: Record<string, { count: number; name: string }> =
       {}
     orders.forEach(order => {
-      if (order.cliente) {
-        const fullName = `${order.cliente.nombres} ${order.cliente.apellidoPaterno} ${order.cliente.apellidoMaterno}`
-        if (!customerOrderCount[order.cliente.id]) {
-          customerOrderCount[order.cliente.id] = { count: 0, name: fullName }
+      if (order.customer) {
+        const fullName = `${order.customer.names} ${order.customer.paternalSurname} ${order.customer.maternalSurname}`
+        if (!customerOrderCount[order.customer.id]) {
+          customerOrderCount[order.customer.id] = { count: 0, name: fullName }
         }
-        customerOrderCount[order.cliente.id].count++
+        customerOrderCount[order.customer.id].count++
       }
     })
     const topCustomer = Object.values(customerOrderCount).reduce(

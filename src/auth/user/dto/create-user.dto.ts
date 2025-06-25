@@ -30,14 +30,14 @@ export class CreateUserDto extends BaseUserDto {
     message:
       'the password must have a Uppercase, lowercase letter and a number',
   })
-  clave: string
+  password: string
 
   @IsOptional()
   @IsInt()
   @IsPositive()
   @Min(900000000, { message: 'the phone number must have 9 digits' })
   @Max(999999999, { message: 'the phone number must have 9 digits' })
-  telefono: number
+  phoneNumber: number
 
   @IsOptional()
   @IsArray()
@@ -47,5 +47,5 @@ export class CreateUserDto extends BaseUserDto {
 
   @IsOptional()
   @IsBoolean()
-  activo: boolean
+  active: boolean
 }

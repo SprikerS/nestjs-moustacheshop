@@ -1,30 +1,31 @@
 import {
   Column,
-  Entity, JoinColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm'
 
 import { User } from '../../auth/user/entities'
 import { OrderDetail } from './order-detail.entity'
 
-@Entity({ name: 'orden' })
+@Entity()
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column('date')
-  fecha: Date
+  date: Date
 
-  @OneToMany(() => OrderDetail, detail => detail.orden)
-  detalles?: OrderDetail[]
+  @OneToMany(() => OrderDetail, detail => detail.order)
+  details?: OrderDetail[]
 
-  @ManyToOne(() => User, user => user.ventas)
-  @JoinColumn({ name: 'empleado_id' })
-  empleado: User
+  @ManyToOne(() => User, user => user.sales)
+  @JoinColumn({ name: 'employee_id' })
+  employee: User
 
-  @ManyToOne(() => User, user => user.compras)
-  @JoinColumn({ name: 'cliente_id' })
-  cliente: User
+  @ManyToOne(() => User, user => user.purchases)
+  @JoinColumn({ name: 'customer_id' })
+  customer: User
 }

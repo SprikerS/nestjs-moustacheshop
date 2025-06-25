@@ -39,7 +39,7 @@ export class OrdersService {
   ) {}
 
   async create(employee: User, createOrderDto: CreateOrderDto) {
-    const { productos = [], dni, fecha, ...values } = createOrderDto
+    const { products = [], dni, date, ...values } = createOrderDto
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
@@ -57,20 +57,20 @@ export class OrdersService {
         throw new BadRequestException(`You can't create an order for yourself`)
 
       const order = this.orderRepository.create({
-        fecha,
-        cliente: customer,
-        empleado: employee,
+        date,
+        customer,
+        employee,
       })
 
       await queryRunner.manager.save(order)
-      this.validateListProducts(productos)
+      this.validateListProducts(products)
 
-      const details = await this.insertProducts(queryRunner, order, productos)
+      const details = await this.insertProducts(queryRunner, order, products)
       await queryRunner.manager.save(details)
       await queryRunner.commitTransaction()
 
-      details.forEach(detail => delete detail.orden)
-      order.detalles = details
+      details.forEach(detail => delete detail.order)
+      order.details = details
       return order
     } catch (error) {
       await queryRunner.rollbackTransaction()
@@ -87,10 +87,10 @@ export class OrdersService {
       take: limit,
       skip: offset,
       relations: {
-        cliente: true,
-        empleado: true,
-        detalles: {
-          producto: true,
+        customer: true,
+        employee: true,
+        details: {
+          product: true,
         },
       },
     })
@@ -100,10 +100,10 @@ export class OrdersService {
     const order = await this.orderRepository.findOne({
       where: { id },
       relations: {
-        cliente: true,
-        empleado: true,
-        detalles: {
-          producto: true,
+        customer: true,
+        employee: true,
+        details: {
+          product: true,
         },
       },
     })
@@ -124,68 +124,68 @@ export class OrdersService {
   }
 
   async update(employee: User, id: string, updateDto: UpdateOrderDto) {
-    const { fecha, clienteId, productos } = updateDto
+    const { date, customerId, products } = updateDto
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
 
     try {
-      if (clienteId && employee.id === clienteId) {
+      if (customerId && employee.id === customerId) {
         throw new BadRequestException(`You can't create an order for yourself`)
       }
 
       const order = await this.findOneByEmployee(employee, id)
 
-      let customer = order.cliente
-      if (clienteId) customer = await this.userService.findOne(clienteId)
+      let customer = order.customer
+      if (customerId) customer = await this.userService.findOne(customerId)
 
-      order.fecha = fecha ?? order.fecha
-      order.cliente = customer
+      order.date = date ?? order.date
+      order.customer = customer
       await queryRunner.manager.save(order)
 
-      if (!productos) {
+      if (!products) {
         await queryRunner.commitTransaction()
         return order
       }
 
-      this.validateListProducts(productos)
+      this.validateListProducts(products)
 
       const details = await this.detailRepository.find({
-        where: { orden: order },
-        relations: { producto: true },
+        where: { order },
+        relations: { product: true },
       })
 
       await Promise.all(
-        details.map(async ({ producto, cantidad }, index) => {
-          const productIndex = productos.findIndex(
-            ({ productoId }) => productoId === producto.id,
+        details.map(async ({ product, quantity }, index) => {
+          const productIndex = products.findIndex(
+            ({ productId }) => productId === product.id,
           )
 
           if (productIndex === -1) {
-            producto.stock += cantidad
-            await queryRunner.manager.save(producto)
+            product.stock += quantity
+            await queryRunner.manager.save(product)
             await queryRunner.manager.remove(details[index])
           } else {
-            const { cantidad: newQuantity } = productos[productIndex]
+            const { quantity: newQuantity } = products[productIndex]
 
-            if (cantidad !== newQuantity) {
-              producto.stock += cantidad - newQuantity
-              if (producto.stock < 0)
+            if (quantity !== newQuantity) {
+              product.stock += quantity - newQuantity
+              if (product.stock < 0)
                 throw new BadRequestException(
-                  `Product ${producto.nombre} does not have enough stock`,
+                  `Product ${product.name} does not have enough stock`,
                 )
-              await queryRunner.manager.save(producto)
-              details[index].cantidad = newQuantity
+              await queryRunner.manager.save(product)
+              details[index].quantity = newQuantity
               await queryRunner.manager.save(details[index])
             }
 
-            productos.splice(productIndex, 1)
+            products.splice(productIndex, 1)
           }
         }),
       )
 
-      const newDetails = await this.insertProducts(queryRunner, order, productos)
+      const newDetails = await this.insertProducts(queryRunner, order, products)
       await queryRunner.manager.save(newDetails)
       await queryRunner.commitTransaction()
 
@@ -205,12 +205,12 @@ export class OrdersService {
 
     try {
       const order = await this.findOneByEmployee(employee, id)
-      const { detalles = [] } = order
+      const { details = [] } = order
 
       await Promise.all(
-        detalles.map(async ({ producto, cantidad }) => {
-          producto.stock += cantidad
-          await queryRunner.manager.save(producto)
+        details.map(async ({ product, quantity }) => {
+          product.stock += quantity
+          await queryRunner.manager.save(product)
         }),
       )
 
@@ -229,36 +229,36 @@ export class OrdersService {
     order: Order,
     products: CreateOrderDetailDto[],
   ): Promise<OrderDetail[]> {
-    const pIDS = products.map(product => product.productoId)
+    const pIDS = products.map(product => product.productId)
     const pEnts = await this.productRepository.findBy({ id: In(pIDS) })
     const productMap = new Map(pEnts.map(product => [product.id, product]))
 
-    products.forEach(({ productoId, cantidad }) => {
-      const { nombre, stock } = productMap.get(productoId)
-      if (stock < cantidad)
+    products.forEach(({ productId, quantity }) => {
+      const { name, stock } = productMap.get(productId)
+      if (stock < quantity)
         throw new BadRequestException(
-          `Product ${nombre} has only ${stock} units in stock`,
+          `Product ${name} has only ${stock} units in stock`,
         )
     })
 
     return await Promise.all(
-      products.map(async ({ productoId, cantidad }) => {
-        const product = productMap.get(productoId)
-        product.stock -= cantidad
+      products.map(async ({ productId, quantity }) => {
+        const product = productMap.get(productId)
+        product.stock -= quantity
         await queryRunner.manager.save(product)
 
         return this.detailRepository.create({
-          cantidad: cantidad,
-          precioVenta: product.precio,
-          producto: product,
-          orden: order,
+          quantity,
+          salePrice: product.price,
+          product,
+          order,
         })
       }),
     )
   }
 
   private checkOrderAccessPermission(employee: User, order: Order) {
-    if (employee.id !== order.empleado.id) {
+    if (employee.id !== order.employee.id) {
       if (
         !employee.roles.includes(ValidRoles.ADMIN) &&
         !employee.roles.includes(ValidRoles.SUPERUSER)
@@ -273,7 +273,7 @@ export class OrdersService {
   private validateListProducts(products: CreateOrderDetailDto[]) {
     if (products.length === 0)
       throw new BadRequestException(`Products cannot be empty`)
-    if (products.some(({ cantidad }) => cantidad <= 0))
+    if (products.some(({ quantity }) => quantity <= 0))
       throw new BadRequestException(`Quantity must be greater than 0`)
   }
 }

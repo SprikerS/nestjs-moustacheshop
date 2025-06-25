@@ -7,11 +7,11 @@ export class ForgotPasswordMailDto {
 
   @IsString()
   @MinLength(1)
-  nombres: string
+  names: string
 
   @IsString()
-  @Length(6, 6, { message: 'El código debe tener 6 caracteres.' })
-  codigo: string
+  @Length(6, 6, { message: 'El código debe tener 6 caracteres' })
+  code: string
 
   @IsString()
   @IsUrl()

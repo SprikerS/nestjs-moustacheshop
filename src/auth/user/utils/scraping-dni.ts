@@ -55,9 +55,9 @@ ${dni}
 
     return {
       dni,
-      nombres: capitalizeEachWord(names),
-      apellidoPaterno: capitalizeEachWord(paternalSurname),
-      apellidoMaterno: capitalizeEachWord(maternalSurname),
+      names: capitalizeEachWord(names),
+      paternalSurname: capitalizeEachWord(paternalSurname),
+      maternalSurname: capitalizeEachWord(maternalSurname),
     }
   } catch (error) {
     console.log(error)

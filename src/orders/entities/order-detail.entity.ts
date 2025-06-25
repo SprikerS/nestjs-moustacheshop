@@ -2,30 +2,31 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
-  Entity, JoinColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm'
 
 import { ColumnNumericTransformer } from '../../common/helpers'
 import { Product } from '../../products/entities/product.entity'
 import { Order } from './order.entity'
 
-@Entity({ name: 'orden_detalles' })
+@Entity({ name: 'order_details' })
 export class OrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column('int')
-  cantidad: number
+  quantity: number
 
   @Column('decimal', {
-    name: 'precio_venta',
+    name: 'sale_price',
     precision: 5,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
-  precioVenta: number
+  salePrice: number
 
   @Column('decimal', {
     precision: 5,
@@ -34,17 +35,17 @@ export class OrderDetail {
   })
   total: number
 
-  @ManyToOne(() => Product, product => product.detalles)
-  @JoinColumn({ name: 'producto_id' })
-  producto: Product
+  @ManyToOne(() => Product, product => product.details)
+  @JoinColumn({ name: 'product_id' })
+  product: Product
 
-  @ManyToOne(() => Order, order => order.detalles, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'orden_id' })
-  orden: Order
+  @ManyToOne(() => Order, order => order.details, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'order_id' })
+  order: Order
 
   @BeforeInsert()
   @BeforeUpdate()
   calculateTotal() {
-    this.total = parseFloat((this.cantidad * this.precioVenta).toFixed(2))
+    this.total = parseFloat((this.quantity * this.salePrice).toFixed(2))
   }
 }

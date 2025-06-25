@@ -11,38 +11,38 @@ import { Category } from '../../categories/entities/category.entity'
 import { ColumnNumericTransformer } from '../../common/helpers'
 import { OrderDetail } from '../../orders/entities'
 
-@Entity({ name: 'producto' })
+@Entity()
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column('text', { unique: true })
-  nombre: string
+  name: string
 
   @Column('decimal', {
     precision: 5,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
-  precio: number
+  price: number
 
   @Column('int')
   stock: number
 
   @Column('text', { nullable: true })
-  descripcion: string
+  description: string
 
   @Column('boolean', { default: true })
-  activo: boolean
+  active: boolean
 
-  @ManyToOne(() => Category, category => category.productos, {
+  @ManyToOne(() => Category, category => category.products, {
     eager: true,
     nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'categoria_id' })
-  categoria: Category
+  @JoinColumn({ name: 'category_id' })
+  category: Category
 
-  @OneToMany(() => OrderDetail, detail => detail.producto)
-  detalles?: OrderDetail[]
+  @OneToMany(() => OrderDetail, detail => detail.product)
+  details?: OrderDetail[]
 }

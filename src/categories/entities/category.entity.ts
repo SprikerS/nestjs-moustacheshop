@@ -2,16 +2,16 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 import { Product } from '../../products/entities/product.entity'
 
-@Entity({ name: 'categoria' })
+@Entity()
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column('text', { unique: true })
-  nombre: string
+  name: string
 
-  @OneToMany(() => Product, product => product.categoria, {
+  @OneToMany(() => Product, product => product.category, {
     cascade: false,
   })
-  productos?: Product[]
+  products?: Product[]
 }

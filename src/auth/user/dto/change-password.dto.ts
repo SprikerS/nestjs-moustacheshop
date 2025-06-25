@@ -18,7 +18,7 @@ export class ChangePasswordDto {
     message:
       'La contraseña anterior debe tener una letra mayúscula, una minúscula y un número',
   })
-  claveAnterior: string
+  oldPassword: string
 
   @IsString()
   @MinLength(6)
@@ -27,5 +27,5 @@ export class ChangePasswordDto {
     message:
       'La nueva contraseña debe tener una letra mayúscula, una minúscula y un número',
   })
-  claveNueva: string
+  newPassword: string
 }

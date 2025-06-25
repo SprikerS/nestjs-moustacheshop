@@ -31,12 +31,12 @@ const styles: StyleDictionary = {
 
 export const orderByIDReport = ({
   id,
-  fecha,
-  cliente,
-  detalles,
+  date,
+  customer,
+  details,
 }: Order): TDocumentDefinitions => {
-  const subTotal = detalles
-    .reduce((acc, detail) => acc + detail.precioVenta * detail.cantidad, 0)
+  const subTotal = details
+    .reduce((acc, detail) => acc + detail.salePrice * detail.quantity, 0)
     .toFixed(2)
 
   const total = CurrencyFormatter.formatCurrency(parseFloat(subTotal) * 1.18)
@@ -86,7 +86,7 @@ export const orderByIDReport = ({
                 text: `BILL #${id.split('-')[0].toUpperCase()} \n`,
                 style: 'h3',
               },
-              `${fecha}\n`,
+              `${date}\n`,
             ],
             alignment: 'right',
           },
@@ -109,7 +109,7 @@ export const orderByIDReport = ({
             text: 'Vendido a:\n',
             style: 'h3',
           },
-          `${cliente.nombres} ${cliente.apellidoPaterno} ${cliente.apellidoMaterno} \nDNI: ${cliente.dni}`,
+          `${customer.names} ${customer.paternalSurname} ${customer.maternalSurname} \nDNI: ${customer.dni}`,
         ],
       },
 
@@ -129,18 +129,18 @@ export const orderByIDReport = ({
               { text: 'PRECIO', margin: [20, 0], alignment: 'center' },
               { text: 'TOTAL', alignment: 'center' },
             ],
-            ...detalles.map((order, index) => [
+            ...details.map((order, index) => [
               { text: index + 1, alignment: 'center' },
               {
-                text: order.producto.nombre,
+                text: order.product.name,
                 margin: [10, 0],
               },
               {
-                text: order.cantidad.toString(),
+                text: order.quantity.toString(),
                 alignment: 'center',
               },
               {
-                text: order.precioVenta.toString(),
+                text: order.salePrice.toString(),
                 alignment: 'center',
               },
               {
