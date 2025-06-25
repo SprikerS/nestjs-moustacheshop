@@ -1,10 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common'
+import { ForbiddenException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
@@ -52,28 +46,20 @@ export class UserService {
 
   private async findUserByEmail(email: string, id: string | null = null) {
     const queryBuilder = this.userRepository.createQueryBuilder('qbUser')
-    const user = await queryBuilder
-      .addSelect('qbUser.password')
-      .where('qbUser.email =:email', { email })
-      .getOne()
+    const user = await queryBuilder.addSelect('qbUser.password').where('qbUser.email =:email', { email }).getOne()
 
     if (!user) throw new NotFoundException(`User with email ${email} not found`)
     if (!id) return user
 
-    if (user.id !== id)
-      throw new ForbiddenException(`User with ID ${id} can't access this data`)
+    if (user.id !== id) throw new ForbiddenException(`User with ID ${id} can't access this data`)
 
     return user
   }
 
-  async changePassword(
-    { id }: User,
-    { email, oldPassword, newPassword }: ChangePasswordDto,
-  ) {
+  async changePassword({ id }: User, { email, oldPassword, newPassword }: ChangePasswordDto) {
     try {
       const user = await this.findUserByEmail(email, id)
-      if (!bcrypt.compareSync(oldPassword, user.password))
-        throw new UnauthorizedException('Invalid old password')
+      if (!bcrypt.compareSync(oldPassword, user.password)) throw new UnauthorizedException('Invalid old password')
 
       user.password = await bcrypt.hash(newPassword, 10)
       await this.userRepository.save(user)
@@ -132,14 +118,9 @@ export class UserService {
     }
   }
 
-  async resetPassword(
-    { token, code }: ResetPwdQuery,
-    { password }: ResetPasswordDto,
-  ) {
-    if (!code && !token)
-      throw new UnauthorizedException('Invalid token or code')
-    if (code && code.length !== 6)
-      throw new UnauthorizedException(`Length of code must be 6`)
+  async resetPassword({ token, code }: ResetPwdQuery, { password }: ResetPasswordDto) {
+    if (!code && !token) throw new UnauthorizedException('Invalid token or code')
+    if (code && code.length !== 6) throw new UnauthorizedException(`Length of code must be 6`)
 
     const queryBuilder = this.pwdRecRepository.createQueryBuilder('qbPWD')
     const pwdRec = await queryBuilder
@@ -149,8 +130,7 @@ export class UserService {
       .getOne()
 
     if (!pwdRec) throw new UnauthorizedException('Invalid code or token')
-    if (code && pwdRec.expiresAt < new Date())
-      throw new UnauthorizedException('Your code or token has expired')
+    if (code && pwdRec.expiresAt < new Date()) throw new UnauthorizedException('Your code or token has expired')
 
     try {
       if (token) this.jwtService.verify(token)
@@ -196,9 +176,7 @@ export class UserService {
   async login({ email, password }: LoginUserDto) {
     const user = await this.findUserByEmail(email)
 
-    if (!bcrypt.compareSync(password, user.password))
-      throw new UnauthorizedException('Invalid credentials')
-
+    if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException('Invalid credentials')
     delete user.password
 
     return {
@@ -271,11 +249,9 @@ export class UserService {
         purchases: true,
       },
     })
-    if (!user) throw new NotFoundException(`Product with id ${id} not found`)
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`)
 
-    const hasRelations =
-      (user.sales && user.sales.length > 0) ||
-      (user.purchases && user.purchases.length > 0)
+    const hasRelations = (user.sales && user.sales.length > 0) || (user.purchases && user.purchases.length > 0)
 
     if (hasRelations) {
       user.active = false

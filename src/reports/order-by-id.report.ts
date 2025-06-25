@@ -1,8 +1,4 @@
-import {
-  Content,
-  StyleDictionary,
-  TDocumentDefinitions,
-} from 'pdfmake/interfaces'
+import { Content, StyleDictionary, TDocumentDefinitions } from 'pdfmake/interfaces'
 
 import { CurrencyFormatter } from '../common/helpers'
 import { Order } from '../orders/entities'
@@ -29,15 +25,8 @@ const styles: StyleDictionary = {
   },
 }
 
-export const orderByIDReport = ({
-  id,
-  date,
-  customer,
-  details,
-}: Order): TDocumentDefinitions => {
-  const subTotal = details
-    .reduce((acc, detail) => acc + detail.salePrice * detail.quantity, 0)
-    .toFixed(2)
+export const orderByIDReport = ({ id, date, customer, details }: Order): TDocumentDefinitions => {
+  const subTotal = details.reduce((acc, detail) => acc + detail.salePrice * detail.quantity, 0).toFixed(2)
 
   const total = CurrencyFormatter.formatCurrency(parseFloat(subTotal) * 1.18)
 

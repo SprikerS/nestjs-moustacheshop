@@ -61,8 +61,7 @@ export class ProductsService {
         ...updateProductDto,
       })
 
-      if (!product)
-        throw new NotFoundException(`Product with id ${id} not found`)
+      if (!product) throw new NotFoundException(`Product with id ${id} not found`)
 
       product.category = await this.resolveCategory(categoryId)
 
@@ -87,9 +86,7 @@ export class ProductsService {
     }
   }
 
-  private async resolveCategory(
-    categoryId: string | null,
-  ): Promise<Category | null> {
+  private async resolveCategory(categoryId: string | null): Promise<Category | null> {
     if (categoryId === null) return null
     if (categoryId) return await this.categoryService.findOne(categoryId)
     return null

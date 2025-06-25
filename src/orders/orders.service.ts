@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, In, QueryRunner, Repository } from 'typeorm'
 
@@ -47,14 +41,9 @@ export class OrdersService {
 
     try {
       const userDB = await this.userRepository.findOne({ where: { dni } })
-      const customer = userDB
-        ? userDB
-        : await queryRunner.manager.save(
-            this.userRepository.create({ dni, ...values }),
-          )
+      const customer = userDB ? userDB : await queryRunner.manager.save(this.userRepository.create({ dni, ...values }))
 
-      if (employee.id === customer.id)
-        throw new BadRequestException(`You can't create an order for yourself`)
+      if (employee.id === customer.id) throw new BadRequestException(`You can't create an order for yourself`)
 
       const order = this.orderRepository.create({
         date,
@@ -158,9 +147,7 @@ export class OrdersService {
 
       await Promise.all(
         details.map(async ({ product, quantity }, index) => {
-          const productIndex = products.findIndex(
-            ({ productId }) => productId === product.id,
-          )
+          const productIndex = products.findIndex(({ productId }) => productId === product.id)
 
           if (productIndex === -1) {
             product.stock += quantity
@@ -171,10 +158,7 @@ export class OrdersService {
 
             if (quantity !== newQuantity) {
               product.stock += quantity - newQuantity
-              if (product.stock < 0)
-                throw new BadRequestException(
-                  `Product ${product.name} does not have enough stock`,
-                )
+              if (product.stock < 0) throw new BadRequestException(`Product ${product.name} does not have enough stock`)
               await queryRunner.manager.save(product)
               details[index].quantity = newQuantity
               await queryRunner.manager.save(details[index])
@@ -235,10 +219,7 @@ export class OrdersService {
 
     products.forEach(({ productId, quantity }) => {
       const { name, stock } = productMap.get(productId)
-      if (stock < quantity)
-        throw new BadRequestException(
-          `Product ${name} has only ${stock} units in stock`,
-        )
+      if (stock < quantity) throw new BadRequestException(`Product ${name} has only ${stock} units in stock`)
     })
 
     return await Promise.all(
@@ -259,21 +240,14 @@ export class OrdersService {
 
   private checkOrderAccessPermission(employee: User, order: Order) {
     if (employee.id !== order.employee.id) {
-      if (
-        !employee.roles.includes(ValidRoles.ADMIN) &&
-        !employee.roles.includes(ValidRoles.SUPERUSER)
-      ) {
-        throw new ForbiddenException(
-          `Employee with ID ${employee.id} cannot access order with ID ${order.id}`,
-        )
+      if (!employee.roles.includes(ValidRoles.ADMIN) && !employee.roles.includes(ValidRoles.SUPERUSER)) {
+        throw new ForbiddenException(`Employee with ID ${employee.id} cannot access order with ID ${order.id}`)
       }
     }
   }
 
   private validateListProducts(products: CreateOrderDetailDto[]) {
-    if (products.length === 0)
-      throw new BadRequestException(`Products cannot be empty`)
-    if (products.some(({ quantity }) => quantity <= 0))
-      throw new BadRequestException(`Quantity must be greater than 0`)
+    if (products.length === 0) throw new BadRequestException(`Products cannot be empty`)
+    if (products.some(({ quantity }) => quantity <= 0)) throw new BadRequestException(`Quantity must be greater than 0`)
   }
 }

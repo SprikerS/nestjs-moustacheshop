@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common'
 
 import { Auth, GetUser } from '../auth/decorators'
 import { ValidRoles } from '../auth/interfaces'
@@ -41,11 +31,7 @@ export class OrdersController {
 
   @Patch(':id')
   @Auth(ValidRoles.EMPLOYEE)
-  update(
-    @GetUser() employee: User,
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateOrderDto: UpdateOrderDto,
-  ) {
+  update(@GetUser() employee: User, @Param('id', ParseUUIDPipe) id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(employee, id, updateOrderDto)
   }
 

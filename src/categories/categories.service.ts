@@ -36,8 +36,7 @@ export class CategoriesService {
 
   async findOne(id: string) {
     const category = await this.categoryRepository.findOneBy({ id })
-    if (!category)
-      throw new NotFoundException(`Category with id ${id} not found`)
+    if (!category) throw new NotFoundException(`Category with id ${id} not found`)
 
     return category
   }
@@ -49,8 +48,7 @@ export class CategoriesService {
         ...updateCategoryDto,
       })
 
-      if (!category)
-        throw new NotFoundException(`Category with id ${id} not found`)
+      if (!category) throw new NotFoundException(`Category with id ${id} not found`)
 
       return this.categoryRepository.save(category)
     } catch (error) {

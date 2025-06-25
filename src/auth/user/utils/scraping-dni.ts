@@ -36,14 +36,11 @@ ${dni}
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
     }
 
-    const responsePost = await fetchWithCookies(
-      'https://eldni.com/pe/buscar-datos-por-dni',
-      {
-        method: 'POST',
-        headers,
-        body: data,
-      },
-    )
+    const responsePost = await fetchWithCookies('https://eldni.com/pe/buscar-datos-por-dni', {
+      method: 'POST',
+      headers,
+      body: data,
+    })
     const htmlPost = await responsePost.text()
 
     const $post = cheerio.load(htmlPost)

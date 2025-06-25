@@ -1,10 +1,6 @@
 import { Content, ContextPageSize } from 'pdfmake/interfaces'
 
-export const footerSection = (
-  currentPage: number,
-  pageCount: number,
-  pageSize: ContextPageSize,
-): Content => {
+export const footerSection = (currentPage: number, pageCount: number, pageSize: ContextPageSize): Content => {
   return {
     text: `Page ${currentPage} of ${pageCount}`,
     alignment: 'right',

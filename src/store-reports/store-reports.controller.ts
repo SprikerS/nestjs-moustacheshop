@@ -8,10 +8,7 @@ export class StoreReportsController {
   constructor(private readonly storeReportsService: StoreReportsService) {}
 
   @Get(':id')
-  async getOrderReport(
-    @Res() response: Response,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  async getOrderReport(@Res() response: Response, @Param('id', ParseUUIDPipe) id: string) {
     const pdfDoc = await this.storeReportsService.getOrderByIdReport(id)
 
     ;(response as any).setHeader('Content-Type', 'application/pdf')

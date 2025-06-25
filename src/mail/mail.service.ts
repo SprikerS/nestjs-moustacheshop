@@ -20,20 +20,14 @@ export class MailService {
 
   async sendForgotPasswordEmail(code: string, jwt: string, user: User) {
     const url = `${process.env.FRONTEND_URL}/auth/reset-password?token=${jwt}`
-    return this.sendEmail(
-      user,
-      'Restablecimiento de contraseña de Tienda Bigotes',
-      TEMPLATES.FORGOT_PASSWORD,
-      { code, url },
-    )
+    return this.sendEmail(user, 'Restablecimiento de contraseña de Tienda Bigotes', TEMPLATES.FORGOT_PASSWORD, {
+      code,
+      url,
+    })
   }
 
   async notifyPasswordChange(user: User) {
-    return this.sendEmail(
-      user,
-      'Confirmación de cambio de contraseña de Tienda Bigotes',
-      TEMPLATES.CHANGE_PASSWORD,
-    )
+    return this.sendEmail(user, 'Confirmación de cambio de contraseña de Tienda Bigotes', TEMPLATES.CHANGE_PASSWORD)
   }
 
   private async sendEmail(
@@ -69,9 +63,7 @@ export class MailService {
       })
       this.logger.log(`${subject} email sent to ${email}`)
     } catch (error) {
-      throw new EmailSendingException(
-        `Failed to send ${subject} email to ${email} - ${error.message}`,
-      )
+      throw new EmailSendingException(`Failed to send ${subject} email to ${email} - ${error.message}`)
     }
   }
 

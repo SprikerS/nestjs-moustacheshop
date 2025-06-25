@@ -34,10 +34,7 @@ export class UserController {
   @Post('change-password')
   @Auth(ValidRoles.EMPLOYEE)
   @HttpCode(HttpStatus.OK)
-  changePassword(
-    @GetUser() user: User,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
+  changePassword(@GetUser() user: User, @Body() changePasswordDto: ChangePasswordDto) {
     return this.userService.changePassword(user, changePasswordDto)
   }
 
@@ -49,10 +46,7 @@ export class UserController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  resetPassword(
-    @Query() query: ResetPwdQuery,
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
+  resetPassword(@Query() query: ResetPwdQuery, @Body() resetPasswordDto: ResetPasswordDto) {
     return this.userService.resetPassword(query, resetPasswordDto)
   }
 
@@ -90,10 +84,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updatePersonDto: UpdateUserDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updatePersonDto: UpdateUserDto) {
     return this.userService.update(id, updatePersonDto)
   }
 

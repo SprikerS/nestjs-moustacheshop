@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common'
 
 import { Auth } from '../auth/decorators'
 import { CategoriesService } from './categories.service'
@@ -38,10 +28,7 @@ export class CategoriesController {
 
   @Patch(':id')
   @Auth(ValidRoles.EMPLOYEE)
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(id, updateCategoryDto)
   }
 

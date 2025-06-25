@@ -11,11 +11,7 @@ import { User } from '../auth/user/entities'
 @Module({
   controllers: [OrdersController],
   providers: [OrdersService],
-  imports: [
-    AuthModule,
-    ProductsModule,
-    TypeOrmModule.forFeature([Order, OrderDetail, User]),
-  ],
+  imports: [AuthModule, ProductsModule, TypeOrmModule.forFeature([Order, OrderDetail, User])],
   exports: [OrdersService, TypeOrmModule],
 })
 export class OrdersModule {}

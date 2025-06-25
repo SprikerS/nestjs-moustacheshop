@@ -89,8 +89,7 @@ export class SummariesService {
     const ordersTotal = orders.length
 
     // Vendedor con más órdenes
-    const employeeOrderCount: Record<string, { count: number; name: string }> =
-      {}
+    const employeeOrderCount: Record<string, { count: number; name: string }> = {}
     orders.forEach(order => {
       if (order.employee) {
         const fullName = `${order.employee.names} ${order.employee.paternalSurname} ${order.employee.maternalSurname}`
@@ -106,8 +105,7 @@ export class SummariesService {
     ).name
 
     // Cliente con más compras
-    const customerOrderCount: Record<string, { count: number; name: string }> =
-      {}
+    const customerOrderCount: Record<string, { count: number; name: string }> = {}
     orders.forEach(order => {
       if (order.customer) {
         const fullName = `${order.customer.names} ${order.customer.paternalSurname} ${order.customer.maternalSurname}`
