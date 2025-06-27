@@ -1,12 +1,14 @@
 import 'reflect-metadata'
 
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { ValidationPipe } from '@nestjs/common'
 import cookieParser from 'cookie-parser'
 
 import { AppModule } from './app.module'
+import { findAvailablePort } from './common/helpers'
 
 async function bootstrap() {
+  const port = Number(process.env.PORT) || 3000
   const app = await NestFactory.create(AppModule)
 
   app.use(cookieParser())
@@ -18,7 +20,11 @@ async function bootstrap() {
     }),
   )
 
-  await app.listen(3000)
+  findAvailablePort(port).then(serverPort => {
+    app.listen(serverPort, () => {
+      Logger.log(`Server listening on: http://localhost:${serverPort}`, 'NestApplication')
+    })
+  })
 }
 
 bootstrap()
