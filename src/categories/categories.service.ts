@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 
 import { Category } from './entities/category.entity'
 import { CreateCategoryDto, UpdateCategoryDto } from './dto'
@@ -12,6 +12,8 @@ export class CategoriesService {
   private readonly logger = new Logger(CategoriesService.name)
 
   constructor(
+    private readonly dataSource: DataSource,
+
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
   ) {}
@@ -27,11 +29,43 @@ export class CategoriesService {
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 20, offset = 0 } = paginationDto
-    return await this.categoryRepository.find({
-      order: { name: 'ASC' },
-      take: limit,
-      skip: offset,
-    })
+
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
+    try {
+      const rawResults = await queryRunner.manager
+        .createQueryBuilder(Category, 'category')
+        .leftJoin(
+          subQuery => {
+            return subQuery
+              .select('product.category_id', 'category_id')
+              .addSelect('COUNT(*)', 'count')
+              .from('product', 'product')
+              .groupBy('product.category_id')
+          },
+          'product_count',
+          'product_count.category_id = category.id',
+        )
+        .select([
+          'category.id AS id',
+          'category.name AS name',
+          'COALESCE(product_count.count, 0)::int AS "productsCount"',
+        ])
+        .orderBy('category.name', 'ASC')
+        .offset(offset)
+        .limit(limit)
+        .getRawMany()
+
+      await queryRunner.commitTransaction()
+      return rawResults
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      handleDBExceptions(this.logger, error)
+    } finally {
+      await queryRunner.release()
+    }
   }
 
   async findOne(id: string) {
