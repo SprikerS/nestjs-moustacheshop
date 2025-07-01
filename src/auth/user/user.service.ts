@@ -39,8 +39,23 @@ export class UserService {
     private readonly mailService: MailService,
   ) {}
 
-  private getJwtToken(payload: JwtPayload) {
-    return this.jwtService.sign(payload)
+  private mapUserToJwtPayload(user: User): JwtPayload {
+    return {
+      id: user.id,
+      names: user.names,
+      paternalSurname: user.paternalSurname,
+      maternalSurname: user.maternalSurname,
+      dni: user.dni,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      active: user.active,
+      roles: user.roles,
+    }
+  }
+
+  private getJwtToken(user: User) {
+    const payload = this.mapUserToJwtPayload(user)
+    return this.jwtService.sign({ ...payload })
   }
 
   private getJwtForgotPasswordToken(payload: JwtPayloadForgotPassword) {
@@ -168,8 +183,8 @@ export class UserService {
       delete user.password
 
       return {
-        ...user,
-        token: this.getJwtToken({ id: user.id }),
+        // ...user,
+        token: this.getJwtToken(user),
       }
     } catch (error) {
       handleDBExceptions(this.logger, error)
@@ -182,7 +197,7 @@ export class UserService {
     if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException('Invalid credentials')
     delete user.password
 
-    const token = this.getJwtToken({ id: user.id })
+    const token = this.getJwtToken(user)
     const expires = new Date()
     expires.setMilliseconds(expires.getMilliseconds() + ms(process.env.JWT_EXPIRATION as ms.StringValue))
 
@@ -193,15 +208,15 @@ export class UserService {
     })
 
     return {
-      ...user,
+      // ...user,
       token,
     }
   }
 
   async checkAuthStatus(user: User) {
     return {
-      ...user,
-      token: this.getJwtToken({ id: user.id }),
+      // ...user,
+      token: this.getJwtToken(user),
     }
   }
 
