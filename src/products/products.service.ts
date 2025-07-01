@@ -1,12 +1,11 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { ILike, Repository } from 'typeorm'
 
 import { CategoriesService } from '../categories/categories.service'
 import { Category } from '../categories/entities/category.entity'
-import { CreateProductDto, UpdateProductDto } from './dto'
+import { CreateProductDto, PaginationProductDto, UpdateProductDto } from './dto'
 import { handleDBExceptions } from '../common/helpers'
-import { PaginationDto } from '../common/dtos/pagination.dto'
 import { Product } from './entities/product.entity'
 
 @Injectable()
@@ -37,13 +36,43 @@ export class ProductsService {
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
-    const { limit = 20, offset = 0 } = paginationDto
-    return this.productRepository.find({
+  async findAll(paginationDto: PaginationProductDto) {
+    const { search, category, active, limit = 20, offset = 0 } = paginationDto
+
+    const where: any = []
+
+    if (search) {
+      where.push({ name: ILike(`%${search}%`) }, { description: ILike(`%${search}%`) })
+    }
+
+    const categoryFilter = category ? { category: { name: category } } : undefined
+    const activeFilter = typeof active === 'boolean' ? { active } : undefined
+
+    const finalWhere =
+      where.length > 0
+        ? where.map(condition => ({
+            ...condition,
+            ...(categoryFilter || {}),
+            ...(activeFilter || {}),
+          }))
+        : {
+            ...(categoryFilter || {}),
+            ...(activeFilter || {}),
+          }
+
+    const [data, total] = await this.productRepository.findAndCount({
+      where: finalWhere,
       order: { name: 'ASC' },
       take: limit,
       skip: offset,
     })
+
+    return {
+      data,
+      total,
+      limit,
+      offset,
+    }
   }
 
   async findOne(id: string) {

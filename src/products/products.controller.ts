@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common'
 
 import { ProductsService } from './products.service'
-import { CreateProductDto, UpdateProductDto } from './dto'
-import { PaginationDto } from '../common/dtos/pagination.dto'
+import { CreateProductDto, PaginationProductDto, UpdateProductDto } from './dto'
 
 @Controller('products')
 export class ProductsController {
@@ -14,7 +13,7 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
+  findAll(@Query() paginationDto: PaginationProductDto) {
     return this.productsService.findAll(paginationDto)
   }
 
