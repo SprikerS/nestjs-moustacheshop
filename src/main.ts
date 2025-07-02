@@ -8,7 +8,7 @@ import { AppModule } from './app.module'
 import { findAvailablePort } from './common/helpers'
 
 async function bootstrap() {
-  const port = Number(process.env.PORT) || 3000
+  const port = Number(process.env.PORT) || 8000
   const app = await NestFactory.create(AppModule)
 
   app.use(cookieParser())
