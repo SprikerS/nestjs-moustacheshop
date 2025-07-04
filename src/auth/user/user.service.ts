@@ -233,7 +233,9 @@ export class UserService {
       }
     }
 
-    return await scrapingDNI(dni)
+    const scraped = await scrapingDNI(dni)
+    if (!scraped) throw new NotFoundException(`DNI ${dni} not found in RENIEC`)
+    return scraped
   }
 
   findAll({ limit = 20, offset = 0 }: PaginationDto) {

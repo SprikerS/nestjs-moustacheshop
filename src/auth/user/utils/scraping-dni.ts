@@ -50,6 +50,10 @@ ${dni}
     const paternalSurname = divCopy.find('input#apellidop').val() as string
     const maternalSurname = divCopy.find('input#apellidom').val() as string
 
+    if (!names || !paternalSurname || !maternalSurname) {
+      return null
+    }
+
     return {
       dni,
       names: capitalizeEachWord(names),
