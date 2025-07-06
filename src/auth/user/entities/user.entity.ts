@@ -35,6 +35,9 @@ export class User {
   @Column('bool', { default: false })
   active: boolean
 
+  @Column('bool', { default: false })
+  verified: boolean
+
   @Column('text', { array: true, default: [ValidRoles.CUSTOMER] })
   roles: string[]
 

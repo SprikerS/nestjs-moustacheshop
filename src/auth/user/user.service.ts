@@ -238,11 +238,11 @@ export class UserService {
       })
 
       if (!verifyRecord) throw new UnauthorizedException('Invalid code or token')
-      if (verifyRecord.user.active) throw new UnauthorizedException('Account already verified')
+      if (verifyRecord.user.verified) throw new UnauthorizedException('Account already verified')
       if (verifyRecord.user.email !== email) throw new UnauthorizedException('Email does not match')
 
       const user = verifyRecord.user
-      user.active = true
+      user.verified = true
 
       await this.userRepository.save(user)
       await this.verifyAccountRepository.remove(verifyRecord)
