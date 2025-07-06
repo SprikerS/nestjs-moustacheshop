@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { MailModule } from '../mail/mail.module'
-import { PasswordRecovery, User } from './user/entities'
+import { PasswordRecovery, User, VerifyAccount } from './user/entities'
 import { UserController } from './user/user.controller'
 import { UserService } from './user/user.service'
 
@@ -16,7 +16,7 @@ import { UserService } from './user/user.service'
   imports: [
     ConfigModule,
     MailModule,
-    TypeOrmModule.forFeature([User, PasswordRecovery]),
+    TypeOrmModule.forFeature([User, PasswordRecovery, VerifyAccount]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -4,6 +4,7 @@ import { ValidRoles } from '../../interfaces'
 import { capitalizeEachWord } from '../../../common/helpers'
 import { Order } from '../../../orders/entities'
 import { PasswordRecovery } from './password.recovery'
+import { VerifyAccount } from './verify.account'
 
 @Entity()
 export class User {
@@ -43,8 +44,11 @@ export class User {
   @OneToMany(() => Order, order => order.customer)
   purchases?: Order[]
 
-  @OneToOne(() => PasswordRecovery, pass => pass.user, { onDelete: 'CASCADE' })
+  @OneToOne(() => PasswordRecovery, pass => pass.user)
   pwdRec?: PasswordRecovery
+
+  @OneToOne(() => VerifyAccount, verify => verify.user)
+  verifyAccount?: VerifyAccount
 
   @BeforeInsert()
   @BeforeUpdate()

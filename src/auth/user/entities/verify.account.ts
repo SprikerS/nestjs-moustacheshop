@@ -3,7 +3,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGenerate
 import { User } from './user.entity'
 
 @Entity()
-export class PasswordRecovery {
+export class VerifyAccount {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -22,7 +22,7 @@ export class PasswordRecovery {
   @Column('text')
   jwt: string
 
-  @OneToOne(() => User, user => user.pwdRec, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, user => user.verifyAccount, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User
 }
