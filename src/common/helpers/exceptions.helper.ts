@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 
-import { TokenExpiredError } from '@nestjs/jwt'
+import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt'
 import { EmailSendingException } from './custom-exceptions'
 
 export function handleDBExceptions(logger: Logger, error: any): void {
@@ -24,6 +24,8 @@ export function handleDBExceptions(logger: Logger, error: any): void {
   if (error instanceof NotFoundException) throw new NotFoundException(error.message)
 
   if (error instanceof TokenExpiredError) throw new UnauthorizedException(error.message)
+
+  if (error instanceof JsonWebTokenError) throw new UnauthorizedException(error.message)
 
   if (error instanceof UnauthorizedException) throw new UnauthorizedException(error.message)
 
