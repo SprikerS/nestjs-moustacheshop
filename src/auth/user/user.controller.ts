@@ -19,12 +19,14 @@ import { Auth, GetUser } from '../decorators'
 import { ValidRoles } from '../interfaces'
 import {
   ChangePasswordDto,
+  CreateUserDashboardDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
   UpdateUserDto,
 } from './dto'
+import { VerifyAccountDto } from './dto/verify-account.dto'
 import { User } from './entities'
 import { ResetPwdQuery } from './interfaces'
 import { UserService } from './user.service'
@@ -55,6 +57,17 @@ export class UserController {
   @Post('register')
   registerUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto)
+  }
+
+  @Post('register-dashboard')
+  registerDashboard(@Body() createUserDashboardDto: CreateUserDashboardDto) {
+    return this.userService.createDashboard(createUserDashboardDto)
+  }
+
+  @Post('verify-account')
+  @HttpCode(HttpStatus.OK)
+  verifyAccount(@Body() verifyAccountDto: VerifyAccountDto) {
+    return this.userService.verifyAccount(verifyAccountDto)
   }
 
   @Post('login')

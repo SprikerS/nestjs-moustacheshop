@@ -13,13 +13,15 @@ import { MailService } from '../../mail/mail.service'
 import { JwtPayload, JwtPayloadForgotPassword } from '../interfaces'
 import {
   ChangePasswordDto,
+  CreateUserDashboardDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
   UpdateUserDto,
+  VerifyAccountDto,
 } from './dto'
-import { PasswordRecovery, User } from './entities'
+import { PasswordRecovery, User, VerifyAccount } from './entities'
 import { ResetPwdQuery } from './interfaces'
 import { scrapingDNI } from './utils/scraping-dni'
 
@@ -30,6 +32,9 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectRepository(VerifyAccount)
+    private readonly verifyAccountRepository: Repository<VerifyAccount>,
 
     @InjectRepository(PasswordRecovery)
     private readonly pwdRecRepository: Repository<PasswordRecovery>,
@@ -185,6 +190,66 @@ export class UserService {
       return {
         // ...user,
         token: this.getJwtToken(user),
+      }
+    } catch (error) {
+      handleDBExceptions(this.logger, error)
+    }
+  }
+
+  async createDashboard(createUserDashboardDto: CreateUserDashboardDto) {
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
+    try {
+      const { active, email, ...data } = createUserDashboardDto
+
+      const user = this.userRepository.create({ email, ...data })
+      await queryRunner.manager.save(user)
+
+      const code = Math.floor(100000 + Math.random() * 900000).toString()
+      const token = this.jwtService.sign({ email: user.email })
+
+      const verificationRecord = this.verifyAccountRepository.create({ code, token, user })
+      await queryRunner.manager.save(verificationRecord)
+
+      await this.mailService.notifyAccountVerification(user, token, code)
+      await queryRunner.commitTransaction()
+
+      return {
+        message: `Se ha enviado un correo de verificación a ${user.email}.`,
+      }
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      handleDBExceptions(this.logger, error)
+    } finally {
+      await queryRunner.release()
+    }
+  }
+
+  async verifyAccount({ token, code }: VerifyAccountDto) {
+    try {
+      const payload = this.jwtService.verify(token)
+      const email = payload.email
+
+      const verifyRecord = await this.verifyAccountRepository.findOne({
+        where: { token, code: String(code) },
+        relations: { user: true },
+      })
+
+      if (!verifyRecord) throw new UnauthorizedException('Invalid code or token')
+      if (verifyRecord.user.active) throw new UnauthorizedException('Account already verified')
+      if (verifyRecord.user.email !== email) throw new UnauthorizedException('Email does not match')
+
+      const user = verifyRecord.user
+      user.active = true
+
+      await this.userRepository.save(user)
+      await this.verifyAccountRepository.remove(verifyRecord)
+
+      return {
+        status: 'success',
+        message: 'Account verified successfully',
       }
     } catch (error) {
       handleDBExceptions(this.logger, error)

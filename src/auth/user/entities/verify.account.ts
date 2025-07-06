@@ -11,7 +11,7 @@ export class VerifyAccount {
   code: string
 
   @Column('text')
-  jwt: string
+  token: string
 
   @OneToOne(() => User, user => user.verifyAccount, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
