@@ -108,7 +108,7 @@ export class UserService {
       const user = await this.findUserByEmail(email)
 
       const code = Math.floor(100000 + Math.random() * 900000).toString()
-      const jwt = this.getJwtForgotPasswordToken({ email, code })
+      const token = this.getJwtForgotPasswordToken({ email, code })
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
 
       let recovery = await this.pwdRecRepository.findOne({
@@ -117,15 +117,15 @@ export class UserService {
       })
 
       if (!recovery) {
-        recovery = this.pwdRecRepository.create({ code: code, jwt, user, expiresAt })
+        recovery = this.pwdRecRepository.create({ code: code, token, user, expiresAt })
       } else {
-        recovery.jwt = jwt
+        recovery.token = token
         recovery.code = code
         recovery.expiresAt = expiresAt
       }
 
       await queryRunner.manager.save(recovery)
-      await this.mailService.sendForgotPasswordEmail(code, jwt, user)
+      await this.mailService.sendForgotPasswordEmail(code, token, user)
       await queryRunner.commitTransaction()
 
       return {

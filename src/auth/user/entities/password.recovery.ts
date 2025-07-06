@@ -20,7 +20,7 @@ export class PasswordRecovery {
   used: boolean
 
   @Column('text')
-  jwt: string
+  token: string
 
   @OneToOne(() => User, user => user.pwdRec, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
