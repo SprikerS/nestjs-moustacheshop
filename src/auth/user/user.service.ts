@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-import { DataSource, Repository } from 'typeorm'
+import { DataSource, ILike, Raw, Repository } from 'typeorm'
 import { Response } from 'express'
 
 import ms from 'ms'
@@ -238,12 +238,49 @@ export class UserService {
     return scraped
   }
 
-  findAll({ limit = 20, offset = 0 }: PaginationDto) {
-    return this.userRepository.find({
+  async findAll(paginationDto: PaginationDto) {
+    const { search, active, limit = 20, offset = 0 } = paginationDto
+
+    const where: any = []
+
+    if (search) {
+      where.push(
+        { dni: ILike(`%${search}%`) },
+        { names: ILike(`%${search}%`) },
+        { paternalSurname: ILike(`%${search}%`) },
+        { maternalSurname: ILike(`%${search}%`) },
+        { email: ILike(`%${search}%`) },
+        {
+          phoneNumber: Raw(alias => `CAST(${alias} AS TEXT) ILIKE '%${search}%'`),
+        },
+      )
+    }
+
+    const activeFilter = typeof active === 'boolean' ? { active } : undefined
+
+    const finalWhere =
+      where.length > 0
+        ? where.map(condition => ({
+            ...condition,
+            ...(activeFilter || {}),
+          }))
+        : {
+            ...(activeFilter || {}),
+          }
+
+    const [data, total] = await this.userRepository.findAndCount({
+      where: finalWhere,
+      order: { names: 'ASC' },
       take: limit,
       skip: offset,
-      // where: { active: true },
     })
+
+    return {
+      data,
+      total,
+      limit,
+      offset,
+    }
   }
 
   async findOne(id: string) {
