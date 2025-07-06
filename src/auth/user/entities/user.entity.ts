@@ -32,7 +32,7 @@ export class User {
   @Column('int', { unique: true, name: 'phone_number', nullable: true })
   phoneNumber?: number
 
-  @Column('bool', { default: true })
+  @Column('bool', { default: false })
   active: boolean
 
   @Column('text', { array: true, default: [ValidRoles.CUSTOMER] })

@@ -10,15 +10,6 @@ export class VerifyAccount {
   @Column('text')
   code: string
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
-  createdAt: Date
-
-  @Column('timestamp with time zone', { name: 'expires_at' })
-  expiresAt: Date
-
-  @Column('bool', { default: false })
-  used: boolean
-
   @Column('text')
   jwt: string
 
