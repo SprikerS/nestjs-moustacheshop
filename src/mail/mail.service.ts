@@ -8,6 +8,7 @@ import { User } from '../auth/user/entities'
 import { EmailSendingException } from '../common/helpers'
 
 enum TEMPLATES {
+  VERIFY_ACCOUNT = './verify-account',
   FORGOT_PASSWORD = './forgot-password',
   CHANGE_PASSWORD = './change-password',
 }
@@ -20,14 +21,19 @@ export class MailService {
 
   async sendForgotPasswordEmail(code: string, jwt: string, user: User) {
     const url = `${process.env.FRONTEND_URL}/auth/reset-password?token=${jwt}`
-    return this.sendEmail(user, 'Restablecimiento de contraseña de Tienda Bigotes', TEMPLATES.FORGOT_PASSWORD, {
+    return this.sendEmail(user, 'Restablecimiento de contraseña de Cheap Store', TEMPLATES.FORGOT_PASSWORD, {
       code,
       url,
     })
   }
 
+  async notifyAccountVerification(user: User, jwt: string, code: string) {
+    const url = `${process.env.FRONTEND_URL}/auth/verify-account?code=${jwt}`
+    return this.sendEmail(user, 'Verificación de cuenta de Cheap Store', TEMPLATES.VERIFY_ACCOUNT, { code, url })
+  }
+
   async notifyPasswordChange(user: User) {
-    return this.sendEmail(user, 'Confirmación de cambio de contraseña de Tienda Bigotes', TEMPLATES.CHANGE_PASSWORD)
+    return this.sendEmail(user, 'Confirmación de cambio de contraseña de Cheap Store', TEMPLATES.CHANGE_PASSWORD)
   }
 
   private async sendEmail(
@@ -39,6 +45,8 @@ export class MailService {
     const logoBuffer = await this.getBufferFromAsset('shop-logo.png')
     const logoBase64 = logoBuffer.toString('base64')
 
+    const year = new Date().getFullYear()
+
     try {
       await this.mailerService.sendMail({
         to: email,
@@ -47,19 +55,20 @@ export class MailService {
         context: {
           names,
           email,
+          year,
           ...context,
         },
-        attachments: [
-          {
-            cid: 'shop-logo',
-            content: Buffer.from(logoBase64, 'base64'),
-            contentDisposition: 'inline',
-            contentTransferEncoding: 'base64',
-            contentType: 'image/png',
-            encoding: 'base64',
-            filename: 'shop-logo.png',
-          },
-        ],
+        // attachments: [
+        //   {
+        //     cid: 'shop-logo',
+        //     content: Buffer.from(logoBase64, 'base64'),
+        //     contentDisposition: 'inline',
+        //     contentTransferEncoding: 'base64',
+        //     contentType: 'image/png',
+        //     encoding: 'base64',
+        //     filename: 'shop-logo.png',
+        //   },
+        // ],
       })
       this.logger.log(`${subject} email sent to ${email}`)
     } catch (error) {

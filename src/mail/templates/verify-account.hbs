@@ -37,6 +37,7 @@
     font-size: 22px;
     font-weight: bold;
     padding: 10px 0;
+    text-align: center;
   }
 
   .content {
@@ -49,7 +50,7 @@
     display: block;
     font-size: 28px;
     letter-spacing: 10px;
-    margin: 20px 0;
+    margin-bottom: 20px;
     text-align: center;
   }
 
@@ -60,7 +61,7 @@
     color: #fff;
     cursor: pointer;
     display: inline-block;
-    margin: 20px 0;
+    margin-top: 20px;
     padding: 10px 20px;
     text-decoration: none;
   }
@@ -85,51 +86,37 @@
 
 <body>
   <div class="header">
-    {{!-- <div class="logo">
-      <img src="cid:shop-logo" style="width: 200px;" />
-    </div> --}}
-    <h4>Restablecimiento de contraseña</h4>
+    <h4>Bienvenido a Cheap Store</h4>
   </div>
 
   <p style="margin-bottom: 10px">
     Estimado(a) <span>{{ names }}</span>
   </p>
   <p>
-    Hemos recibido una solicitud para restablecer la contraseña de su cuenta
-    en <span>Tienda Bigotes</span>, asociada al correo electrónico
-    <span style="text-decoration: none; color: white;">{{ email }}</span>.
-    Si usted realizó esta solicitud por favor siga las instrucciones a
-    continuación para continuar con el proceso.
+    Gracias por registrarse en <span>Cheap Store</span>,
+    para completar el proceso de activación de su cuenta asociada al correo
+    <span style="text-decoration: none; color: white;">{{ email }}</span>,
+    por favor utilice el siguiente código de verificación:
   </p>
+
   <div class="content">
+    <span>{{ code }}</span>
     <p>
-      Para proceder con el restablecimiento de su contraseña, por favor
-      utilice el siguiente código de verificación:
-      <span>{{ code }}</span>
-    </p>
-    <p>
-      Alternativamente, puede hacer clic en el siguiente enlace para completar
-      el proceso:
+      También puede activar su cuenta haciendo clic en el siguiente enlace:
     </p>
     <div style="text-align: center;">
-      <a href="{{ url }}">Restablecer contraseña</a>
+      <a href="{{ url }}">Activar mi cuenta</a>
     </div>
-    <p>
-      Le recordamos que tanto el código como el enlace serán válidos por un
-      período de 15 minutos desde la recepción de este mensaje.
-    </p>
   </div>
   <p>Gracias</p>
-  <span>El equipo de Tienda Bigotes</span>
+  <span>El equipo de Cheap Store</span>
 
   <div class="footer">
     <p>
       Este correo electrónico ha sido enviado en respuesta a una solicitud de
-      restablecimiento de contraseña. Si usted no ha realizado esta solicitud,
-      puede ignorar este mensaje de manera segura. Para obtener más
-      información sobre la seguridad de su cuenta, consulte nuestro artículo
-      de ayuda.
+      activación de cuenta. Si usted no ha realizado esta solicitud,
+      puede ignorar este mensaje de manera segura.
     </p>
-    <div>&copy; {{ year }} moustacheshop</div>
+    <div>&copy; {{ year }} cheapstore</div>
   </div>
 </body>
