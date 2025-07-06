@@ -20,14 +20,12 @@ export class CreateUserDashboardDto extends BaseUserDto {
   @IsEmail()
   email: string
 
-  @IsOptional()
   @IsInt()
   @IsPositive()
   @Min(900000000, { message: 'the phone number must have 9 digits' })
   @Max(999999999, { message: 'the phone number must have 9 digits' })
   phoneNumber: number
 
-  @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsEnum(ValidRoles, { each: true, message: 'each role must be a valid role' })
