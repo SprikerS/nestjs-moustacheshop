@@ -202,7 +202,7 @@ export class UserService {
     await queryRunner.startTransaction()
 
     try {
-      const { active, email, ...data } = createUserDashboardDto
+      const { email, ...data } = createUserDashboardDto
 
       const user = this.userRepository.create({ email, ...data })
       await queryRunner.manager.save(user)

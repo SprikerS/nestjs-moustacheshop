@@ -60,6 +60,7 @@ export class UserController {
   }
 
   @Post('register-dashboard')
+  @Auth(ValidRoles.ADMIN)
   registerDashboard(@Body() createUserDashboardDto: CreateUserDashboardDto) {
     return this.userService.createDashboard(createUserDashboardDto)
   }
