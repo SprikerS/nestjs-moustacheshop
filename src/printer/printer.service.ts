@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common'
 import PdfPrinter from 'pdfmake'
 import { BufferOptions, CustomTableLayout, TDocumentDefinitions } from 'pdfmake/interfaces'
 
-const fontsPath = path.join(process.cwd(), 'assets/fonts')
+const fontsPath = path.join(__dirname, '..', 'assets', 'fonts')
 
 const fonts = {
   Roboto: {
