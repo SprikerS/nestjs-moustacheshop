@@ -8,7 +8,7 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column('date')
+  @Column({ type: 'timestamp with time zone' })
   date: Date
 
   @OneToMany(() => OrderDetail, detail => detail.order)
