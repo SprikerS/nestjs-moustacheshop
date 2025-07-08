@@ -123,7 +123,7 @@ export class OrdersService {
   }
 
   async update(employee: User, id: string, updateDto: UpdateOrderDto) {
-    const { date, customerId, products } = updateDto
+    const { date, customerId, products: newProductsDto } = updateDto
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
@@ -136,52 +136,64 @@ export class OrdersService {
 
       const order = await this.findOneByEmployee(employee, id)
 
-      let customer = order.customer
-      if (customerId) customer = await this.userService.findOne(customerId)
-
+      if (customerId) {
+        if (employee.id === customerId) {
+          throw new BadRequestException(`You can't assign an order to yourself`)
+        }
+        order.customer = await this.userService.findOne(customerId)
+      }
       order.date = date ?? order.date
-      order.customer = customer
       await queryRunner.manager.save(order)
 
-      if (!products) {
+      if (!newProductsDto) {
         await queryRunner.commitTransaction()
         return order
       }
 
-      this.validateListProducts(products)
+      this.validateListProducts(newProductsDto)
 
-      const details = await this.detailRepository.find({
-        where: { order },
+      const oldDetailsMap = new Map(order.details.map(detail => [detail.product.id, detail]))
+      const newProductsMap = new Map(newProductsDto.map(p => [p.productId, p]))
+      const operations = []
+
+      for (const [productId, oldDetail] of oldDetailsMap.entries()) {
+        const newProductData = newProductsMap.get(productId)
+        if (newProductData) {
+          const quantityDifference = oldDetail.quantity - newProductData.quantity
+          if (quantityDifference !== 0) {
+            oldDetail.product.stock += quantityDifference
+            if (oldDetail.product.stock < 0) {
+              throw new BadRequestException(`Product ${oldDetail.product.name} does not have enough stock`)
+            }
+            oldDetail.quantity = newProductData.quantity
+            operations.push(queryRunner.manager.save(oldDetail.product))
+            operations.push(queryRunner.manager.save(oldDetail))
+          }
+        } else {
+          oldDetail.product.stock += oldDetail.quantity
+          operations.push(queryRunner.manager.save(oldDetail.product))
+          operations.push(queryRunner.manager.remove(oldDetail))
+        }
+      }
+
+      const productsToAddDto = []
+      for (const [productId, newProduct] of newProductsMap.entries()) {
+        if (!oldDetailsMap.has(productId)) {
+          productsToAddDto.push(newProduct)
+        }
+      }
+      if (productsToAddDto.length > 0) {
+        const newDetails = await this.insertProducts(queryRunner, order, productsToAddDto)
+        operations.push(queryRunner.manager.save(newDetails))
+      }
+
+      await Promise.all(operations)
+      await queryRunner.commitTransaction()
+
+      order.details = await this.detailRepository.find({
+        where: { order: { id } },
         relations: { product: true },
       })
-
-      await Promise.all(
-        details.map(async ({ product, quantity }, index) => {
-          const productIndex = products.findIndex(({ productId }) => productId === product.id)
-
-          if (productIndex === -1) {
-            product.stock += quantity
-            await queryRunner.manager.save(product)
-            await queryRunner.manager.remove(details[index])
-          } else {
-            const { quantity: newQuantity } = products[productIndex]
-
-            if (quantity !== newQuantity) {
-              product.stock += quantity - newQuantity
-              if (product.stock < 0) throw new BadRequestException(`Product ${product.name} does not have enough stock`)
-              await queryRunner.manager.save(product)
-              details[index].quantity = newQuantity
-              await queryRunner.manager.save(details[index])
-            }
-
-            products.splice(productIndex, 1)
-          }
-        }),
-      )
-
-      const newDetails = await this.insertProducts(queryRunner, order, products)
-      await queryRunner.manager.save(newDetails)
-      await queryRunner.commitTransaction()
 
       return order
     } catch (error) {
