@@ -70,9 +70,12 @@ export class OrdersService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 20, offset = 0 } = paginationDto
+    const { search, limit = 20, offset = 0 } = paginationDto
 
-    return await this.orderRepository.find({
+    // TODO: Implement search functionality
+
+    const [data, total] = await this.orderRepository.findAndCount({
+      order: { date: 'DESC' },
       take: limit,
       skip: offset,
       relations: {
@@ -83,6 +86,13 @@ export class OrdersService {
         },
       },
     })
+
+    return {
+      data,
+      total,
+      limit,
+      offset,
+    }
   }
 
   async findOne(id: string) {
