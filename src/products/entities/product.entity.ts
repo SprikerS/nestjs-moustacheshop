@@ -13,7 +13,7 @@ export class Product {
   name: string
 
   @Column('decimal', {
-    precision: 5,
+    precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })

@@ -14,14 +14,14 @@ export class OrderDetail {
 
   @Column('decimal', {
     name: 'sale_price',
-    precision: 5,
+    precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
   salePrice: number
 
   @Column('decimal', {
-    precision: 5,
+    precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
