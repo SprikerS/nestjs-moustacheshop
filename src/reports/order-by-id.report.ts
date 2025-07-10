@@ -52,7 +52,7 @@ export const orderByIDReport = ({ id, date, customer, details }: Order): TDocume
       },
 
       {
-        text: 'Tienda Bigotes',
+        text: 'CheapStore',
         style: 'h1',
       },
 
@@ -61,11 +61,11 @@ export const orderByIDReport = ({ id, date, customer, details }: Order): TDocume
         columns: [
           {
             text: [
-              { text: '15 Montgomery St.\n', style: 'h3' },
-              `San Francisco, CA 94104 \nBN: 123456789\n`,
+              { text: 'Lima - Perú\n', style: 'h3' },
+              `Miraflores \nBN: ${id.split('-')[0].toUpperCase()}\n`,
               {
-                link: 'https://tiengabigotes.vercel.app',
-                text: 'https://tiengabigotes.com',
+                link: 'https://cheapstore.vercel.app',
+                text: 'https://cheapstore.vercel.app',
               },
             ],
           },
@@ -84,7 +84,7 @@ export const orderByIDReport = ({ id, date, customer, details }: Order): TDocume
 
       // Código QR con la dirección
       {
-        qr: 'https://tiengabigotes.vercel.app',
+        qr: 'https://cheapstore.vercel.app',
         fit: 100,
         alignment: 'right',
       },
