@@ -23,13 +23,13 @@ export class SummariesService {
   ) {}
 
   async fetchSummaries() {
-    const products = await this.getUsers()
-    const users = await this.getProducts()
+    const users = await this.getUsers()
+    const products = await this.getProducts()
     const orders = await this.getOrders()
 
     return {
-      ...products,
       ...users,
+      ...products,
       ...orders,
     }
   }
