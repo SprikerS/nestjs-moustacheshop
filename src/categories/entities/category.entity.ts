@@ -10,6 +10,9 @@ export class Category {
   @Column('text', { unique: true })
   name: string
 
+  @Column('text', { nullable: true })
+  description: string
+
   @OneToMany(() => Product, product => product.category, {
     cascade: false,
   })

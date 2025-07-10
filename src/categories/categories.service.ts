@@ -28,14 +28,14 @@ export class CategoriesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 20, offset = 0 } = paginationDto
+    const { search, limit = 20, offset = 0 } = paginationDto
 
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
 
     try {
-      const rawResults = await queryRunner.manager
+      const queryBuilder = queryRunner.manager
         .createQueryBuilder(Category, 'category')
         .leftJoin(
           subQuery => {
@@ -51,15 +51,27 @@ export class CategoriesService {
         .select([
           'category.id AS id',
           'category.name AS name',
+          'category.description AS description',
           'COALESCE(product_count.count, 0)::int AS "productsCount"',
         ])
-        .orderBy('category.name', 'ASC')
-        .offset(offset)
-        .limit(limit)
-        .getRawMany()
+
+      if (search) {
+        queryBuilder.where('category.name ILIKE :search', {
+          search: `%${search}%`,
+        })
+      }
+
+      const total = await queryBuilder.getCount()
+      const data = await queryBuilder.orderBy('category.name', 'ASC').offset(offset).limit(limit).getRawMany()
 
       await queryRunner.commitTransaction()
-      return rawResults
+
+      return {
+        data,
+        total,
+        limit,
+        offset,
+      }
     } catch (error) {
       await queryRunner.rollbackTransaction()
       handleDBExceptions(this.logger, error)
