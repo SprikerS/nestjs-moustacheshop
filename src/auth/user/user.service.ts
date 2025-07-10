@@ -23,7 +23,7 @@ import {
 } from './dto'
 import { PasswordRecovery, User, VerifyAccount } from './entities'
 import { ResetPwdQuery } from './interfaces'
-import { scrapingDNI } from './utils/scraping-dni'
+import { scrapingDNI, reniecApisnet } from './utils'
 
 @Injectable()
 export class UserService {
@@ -298,9 +298,17 @@ export class UserService {
       }
     }
 
-    const scraped = await scrapingDNI(dni)
-    if (!scraped) throw new NotFoundException(`DNI ${dni} not found in RENIEC`)
-    return scraped
+    let userData = await scrapingDNI(dni)
+
+    if (!userData) {
+      userData = await reniecApisnet(dni)
+    }
+
+    if (!userData) {
+      throw new NotFoundException(`DNI ${dni} not found in RENIEC`)
+    }
+
+    return userData
   }
 
   async findAll(paginationDto: PaginationDto) {
